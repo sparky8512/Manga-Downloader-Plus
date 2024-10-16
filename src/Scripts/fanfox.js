@@ -68,13 +68,8 @@ function fanfoxF() {
         }
     }
     function fetchChapData(pdfButton, zipButton, page, ref){
-        dataUrl = new URL("chapterfun.ashx?cid="+pdfButton.cid+"&page="+page+"&key="+pdfButton.token, ref);
-        return fetch(dataUrl,{referrer:ref}).then((res) => {
-            if(res.ok) {
-                return res.text();
-            }
-            throw res.status;
-        }).then((text) => {
+        let dataUrl = new URL("chapterfun.ashx?cid="+pdfButton.cid+"&page="+page+"&key="+pdfButton.token, ref);
+        return fetchText(dataUrl, ref).then((text) => {
             let unpacked = unpackPacker(text.trim());
             if(!unpacked.includes("pvalue=[")) {
                 throw "Unrecognized page data";
@@ -130,27 +125,16 @@ function fanfoxF() {
             pdfButtons.push(pdfButton);
             zipButtons.push(zipButton);
 
-            let xhttp = new XMLHttpRequest();
-            // added id to each xhttp request to know what button called it					
-            xhttp.id = i;
-            xhttp.chapterCount = rows.length;
-            xhttp.onreadystatechange = function () {
-                let waitNote = document.querySelector("span#md-batch-note");
-                let id = this.id;
-                let chapterCount = this.chapterCount;
-                let pdfButton = pdfButtons[id];
-                let zipButton = zipButtons[id];
-                // in case the page does not exist display and abort request
-                if(this.status === 404){
-                    pdfButton.textContent = "Not Found";
-                    zipButton.style.display = "none";
-                    this.abort();
-                }
-                // if the request succeed
-                if (this.readyState === 4 && this.status === 200) {
+            {
+                let id = i;
+                let chapterCount = rows.length;
+                fetchText(links[id], window.location.href).then((text) => {
+                    let waitNote = document.querySelector("span#md-batch-note");
+                    let pdfButton = pdfButtons[id];
+                    let zipButton = zipButtons[id];
                     // convert text to html DOM
                     let parser = new DOMParser();
-                    let doc = parser.parseFromString(this.responseText, "text/html");
+                    let doc = parser.parseFromString(text, "text/html");
                     let scripts = doc.querySelectorAll("script");
                     for(let script of scripts){
                         if(!script.innerText.includes("p,a,c,k,e,")){
@@ -197,9 +181,9 @@ function fanfoxF() {
                                 continue;
                             }
                             pdfButton.token = parts[1].replaceAll("\\'+\\'","");
-                            parts = this.responseText.match(/var\s+chapterid\s*=\s*([^;]*)\s*;/);
+                            parts = text.match(/var\s+chapterid\s*=\s*([^;]*)\s*;/);
                             pdfButton.cid = parts[1];
-                            parts = this.responseText.match(/var\s+imagecount\s*=\s*([^;]*)\s*;/);
+                            parts = text.match(/var\s+imagecount\s*=\s*([^;]*)\s*;/);
                             pdfButton.pages = parseInt(parts[1]);
                             pdfButton.imgs = [];
                             zipButton.imgs = [];
@@ -232,13 +216,12 @@ function fanfoxF() {
                     }
                     pdfButton.textContent = "Not Found";
                     zipButton.style.display = "none";
-                }
-            };
-            xhttp.onerror = function (){
-                console.log("Failed to get "+links[i]);
-            };
-            xhttp.open("GET", links[i]);
-            xhttp.send();
+                }).catch((err) => {
+                    console.log("Failed to get "+links[id]);
+                    pdfButton.textContent = "Not Found";
+                    zipButton.style.display = "none";
+                });
+            }
         }
     }
     async function getServerImages(pdfButton,zipButton,type, ref) {

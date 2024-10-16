@@ -80,29 +80,16 @@ function mangakakalotF() {
             pdfButtons2.push(pdfButton2);
             zipButtons2.push(zipButton2);
 
-            // to fetch pages number from chapter link
-            var xhttp = new XMLHttpRequest();
-            // added id to each xhttp request to know what button called it					
-            xhttp.id = i;
-            xhttp.onreadystatechange = function () {
-                let id = this.id;
-                let pdfButton1 = pdfButtons1[id];
-                let zipButton1 = zipButtons1[id];
-                let pdfButton2 = pdfButtons2[id];
-                let zipButton2 = zipButtons2[id];
-                // in case the page does not exist display and abort request
-                if(this.status === 404){
-                    pdfButton1.textContent = "Not Found";
-                    zipButton1.style.display = "none";
-                    pdfButton2.textContent = "Not Found";
-                    zipButton2.style.display = "none";
-                    this.abort();
-                }
-                // if the request succeed
-                if (this.readyState === 4 && this.status === 200) {
+            {
+                let id = i;
+                fetchText(links[id], window.location.href).then((text) => {
+                    let pdfButton1 = pdfButtons1[id];
+                    let zipButton1 = zipButtons1[id];
+                    let pdfButton2 = pdfButtons2[id];
+                    let zipButton2 = zipButtons2[id];
                     // convert text to html DOM
                     let parser = new DOMParser();
-                    let doc = parser.parseFromString(this.responseText, "text/html");
+                    let doc = parser.parseFromString(text, "text/html");
                     let serverButtons = doc.querySelectorAll("div.panel-option span.pn-op-sv-img-btn");
                     let serversCount = serverButtons.length;
 
@@ -113,7 +100,7 @@ function mangakakalotF() {
                         zipButton2.removeAttribute("disabled");
                     }
 
-                    let ref = links[this.id];
+                    let ref = links[id];
                     let server1 = "https://mangakakalot.com/change_content_s1";
                     let server2 = "https://mangakakalot.com/change_content_s2";
 
@@ -121,13 +108,14 @@ function mangakakalotF() {
                     zipButton1.addEventListener("click", function(){getServerImages(pdfButton1,zipButton1,2,server1,ref);});
                     pdfButton2.addEventListener("click", function(){getServerImages(pdfButton2,zipButton2,1,server2,ref);});
                     zipButton2.addEventListener("click", function(){getServerImages(pdfButton2,zipButton2,2,server2,ref);});
-                }
-            };
-            xhttp.onerror = function (){
-                console.log("Failed to get "+links[i]);
-            };
-            xhttp.open("GET", links[i]);
-            xhttp.send();
+                }).catch((err) => {
+                    console.log("Failed to get "+links[id]);
+                    pdfButton1.textContent = "Not Found";
+                    zipButton1.style.display = "none";
+                    pdfButton2.textContent = "Not Found";
+                    zipButton2.style.display = "none";
+                });
+            }
         }
     }
 
@@ -135,11 +123,14 @@ function mangakakalotF() {
         pdfButton.disabled = "true";
         zipButton.disabled = "true";
 
-        let html = await fetch(server,{referrer:ref}).then(res => res.text()).catch(error => {
+        let html;
+        try {
+            html = await fetchText(server, ref);
+        } catch (error) {
             pdfButton.removeAttribute("disabled");
             zipButton.removeAttribute("disabled");
             return;
-        });
+        }
         let parser = new DOMParser();
         let doc = parser.parseFromString(html, "text/html");
         let imgs = doc.querySelectorAll("div.container-chapter-reader img");
@@ -245,10 +236,13 @@ function mangakakalotF() {
             let chapterUrl = rows[i].querySelector("a").href;
             let title = rows[i].querySelector("a").textContent;
 
-            let html = await fetch(server,{referrer:chapterUrl}).then(res => res.text()).catch(error => {
+            let html;
+            try {
+                html = await fetchText(server, chapterUrl);
+            } catch(error) {
                 waitNote.textContent = "Failed, try to reload the page.";
                 return;
-            });
+            }
             let parser = new DOMParser();
             let doc = parser.parseFromString(html, "text/html");
             let imgs = doc.querySelectorAll("div.container-chapter-reader img");

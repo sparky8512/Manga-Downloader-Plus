@@ -62,28 +62,16 @@ function readblackcloverF() {
             // storing download button for easy access
             pdfButtons.push(pdfButton);
             zipButtons.push(zipButton);
-            // to fetch pages number from chapter link
-            let xhttp = new XMLHttpRequest();
-            // added id to each xhttp request to know what button called it					
-            xhttp.id = index;
-            xhttp.chapterCount = rows.length;
-            xhttp.onreadystatechange = function () {
-                let waitNote = document.querySelector("span#md-batch-note");
-                let id = this.id;
-                let chapterCount = this.chapterCount;
-                let pdfButton = pdfButtons[id];
-                let zipButton = zipButtons[id];
-                // in case the page does not exist display and abort request
-                if(this.status === 404){
-                    pdfButton.textContent = "Not Found";
-                    zipButton.style.display = "none";
-                    this.abort();
-                }
-                // if the request succeed
-                if (this.readyState === 4 && this.status === 200) {
+            {
+                let id = index;
+                let chapterCount = rows.length;
+                fetchText(links[id], window.location.href).then((text) => {
+                    let waitNote = document.querySelector("span#md-batch-note");
+                    let pdfButton = pdfButtons[id];
+                    let zipButton = zipButtons[id];
                     // convert text to html DOM
                     let parser = new DOMParser();
-                    let doc = parser.parseFromString(this.responseText, "text/html");
+                    let doc = parser.parseFromString(text, "text/html");
                     let imgs = doc.querySelectorAll("div.js-pages-container img.js-page");
 
                     pdfButton.imgs = [];
@@ -114,13 +102,12 @@ function readblackcloverF() {
 
                     pdfButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,1);});
                     zipButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,2);});
-                }
-            };
-            xhttp.onerror = function (){
-                console.log("Failed to get "+links[index]);
-            };
-            xhttp.open("GET", links[index]);
-            xhttp.send();
+                }).catch((err) => {
+                    console.log("Failed to get "+links[id]);
+                    pdfButton.textContent = "Not Found";
+                    zipButton.style.display = "none";
+                });
+            }
             index++;
         }
     }

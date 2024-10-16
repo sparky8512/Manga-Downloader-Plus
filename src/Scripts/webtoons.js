@@ -58,25 +58,14 @@ function webtoonsF() {
             // storing download button for easy access
             pdfButtons.push(pdfButton);
             zipButtons.push(zipButton);
-            // to fetch pages number from chapter link
-            let xhttp = new XMLHttpRequest();
-            // added id to each xhttp request to know what button called it					
-            xhttp.id = i;
-            xhttp.onreadystatechange = function () {
-                let id = this.id;
-                let pdfButton = pdfButtons[id];
-                let zipButton = zipButtons[id];
-                // in case the page does not exist display and abort request
-                if(this.status === 404){
-                    pdfButton.textContent = "Not Found";
-                    zipButton.style.display = "none";
-                    this.abort();
-                }
-                // if the request succeed
-                if (this.readyState === 4 && this.status === 200) {
+            {
+                let id = i;
+                fetchText(links[id], window.location.href).then((text) => {
+                    let pdfButton = pdfButtons[id];
+                    let zipButton = zipButtons[id];
                     // convert text to html DOM
                     let parser = new DOMParser();
-                    let doc = parser.parseFromString(this.responseText, "text/html");
+                    let doc = parser.parseFromString(text, "text/html");
                     let imgs = doc.querySelectorAll("div#_imageList > img._images");
 
                     pdfButton.imgs = [];
@@ -91,13 +80,12 @@ function webtoonsF() {
                     zipButton.removeAttribute("disabled");
                     pdfButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,1);});
                     zipButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,2);});
-                }
-            };
-            xhttp.onerror = function (){
-                console.log("Failed to get "+links[i]);
-            };
-            xhttp.open("GET", links[i]);
-            xhttp.send();
+                }).catch((err) => {
+                    console.log("Failed to get "+links[id]);
+                    pdfButton.textContent = "Not Found";
+                    zipButton.style.display = "none";
+                });
+            }
         }
     }
     // add batch download button
@@ -196,10 +184,13 @@ function webtoonsF() {
             lastPage = mangaUrl + suffix;
         }
         waitNote.textContent = "wait, getting the number of pages";
-        var pageText = await fetch(lastPage).then(res => res.text()).catch(error => {
+        var pageText;
+        try {
+            pageText = await fetchText(lastPage, mangaUrl);
+        } catch(error) {
             waitNote.textContent = "Failed, try to reload the page.";
             return;
-        });
+        }
         let parser = new DOMParser();
         let doc = parser.parseFromString(pageText, "text/html");
         let lastPaginate = doc.querySelector("div.paginate").lastElementChild;
@@ -207,10 +198,13 @@ function webtoonsF() {
         let pageCount = parseInt(numberText);
         waitNote.textContent = "wait, 0/"+pageCount+" pages.";
         for(let i=1;i<=pageCount;i++){
-            let text = await fetch(mangaUrl+"&page="+i).then(res => res.text()).catch(error => {
+            let text;
+            try {
+                text = await fetchText(mangaUrl+"&page="+i, mangaUrl);
+            } catch(error) {
                 waitNote.textContent = "Failed, try to reload the page.";
                 return;
-            });
+            }
             let parser = new DOMParser();
             let doc = parser.parseFromString(text, "text/html");
             let pageRows = doc.querySelectorAll("div.detail_lst > ul#_listUl > li");
@@ -233,10 +227,13 @@ function webtoonsF() {
         waitNote.textContent = "wait, getting images links from each chapter";
         waitNote.textContent = "wait, 0/"+allChapters.length+" Chapters.";
         for(let i=0 ; i<allChapters.length ;i++){
-            let text = await fetch(allChapters[i].link).then(res => res.text()).catch(error => {
+            let text;
+            try {
+                text = await fetchText(allChapters[i].link, window.location.href);
+            } catch (error) {
                 waitNote.textContent = "Failed, try to reload the page.";
                 return;
-            });
+            }
             let parser = new DOMParser();
             let doc = parser.parseFromString(text, "text/html");
             let imgs = doc.querySelectorAll("div#_imageList > img._images");

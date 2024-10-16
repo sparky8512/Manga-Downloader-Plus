@@ -1,17 +1,9 @@
 const { PDFDocument } = PDFLib;
 
-/*
-function looseJsonParse(obj){
-    return Function('"use strict";return ('+obj+');')();
+if (typeof browser == "undefined") {
+    globalThis.browser = chrome;
 }
-*/
-// handle errors from fetching
-function handleErrors(response) {
-    if (!response.ok) {
-        throw "response is not ok";
-    }
-    return response;
-}
+
 // check image arrayBuffer if it's a Jpeg
 function isJPEG(arrayBuffer){
     let data = new Uint8Array(arrayBuffer);
@@ -69,6 +61,29 @@ function wrapFunction(fn, context, params) {
     return function() {
         fn.apply(context, params);
     };
+}
+// Run a fetch() through the background task if cross-origin
+async function fetchText(url, ref) {
+    if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
+        return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"}).then((res) => res.text());
+    }
+    return browser.runtime.sendMessage({cmd: "fetchText", url: url, referrer: ref}).then((res) => {
+        if (res[0]) {
+            return res[1];
+        }
+        throw res[1];
+    });
+}
+async function fetchImage(url, ref) {
+    if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
+        return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"}).then((res) => res.arrayBuffer());
+    }
+    return browser.runtime.sendMessage({cmd: "fetchImage", url: url, referrer: ref}).then((res) => {
+        if (res[0]) {
+            return (new Uint8Array(res[1])).buffer;
+        }
+        throw res[1];
+    });
 }
 // make pdf/zip from images stored in a button
 async function embedImages(pdfButton,zipButton,type,half=false){
@@ -139,15 +154,9 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         // Fetch image arrayBuffer
         let imageBytes;
         try {
-            imageBytes = await fetch(imgUrl, {
-                referrer: referrerLink
-            }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
-                alert("(Manga Downloader) Can't fetch image.\n"+imgUrl);
-                downloadFinished(pdfButton,zipButton);
-                return;
-            });
-        } catch (error) {
-            alert("Try reloading the page then try again.");
+            imageBytes = await fetchImage(imgUrl, referrerLink);
+        } catch {
+            alert("(Manga Downloader) Can't fetch image.\n"+imgUrl);
             downloadFinished(pdfButton,zipButton);
             return;
         }
@@ -291,20 +300,10 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         // Fetch image arrayBuffer
         let imageBytes;
         try {
-            imageBytes = await fetch(imgUrl, {
-                referrer: referrerLink
-            }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
-                progressBar.failedChapters.push(chapter.value.trim());
-                errorHappened = true;
-            });
-        } catch (error) {
-            if(!errorHappened){
-                progressBar.failedChapters.push(chapter.value.trim());
-            }
+            imageBytes = await fetchImage(imgUrl, referrerLink);
+        } catch {
+            progressBar.failedChapters.push(chapter.value.trim());
             errorHappened = true;
-            break;
-        }
-        if(errorHappened){
             break;
         }
         //check image type
@@ -405,20 +404,10 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         // Fetch image arrayBuffer
         let imageBytes;
         try {
-            imageBytes = await fetch(imgUrl, {
-                referrer: referrerLink
-            }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
-                progressBar.failedChapters.push(chapter.value.trim());
-                errorHappened = true;
-            });
-        } catch (error) {
-            if(!errorHappened){
-                progressBar.failedChapters.push(chapter.value.trim());
-            }
+            imageBytes = await fetchImage(imgUrl, referrerLink);
+        } catch {
+            progressBar.failedChapters.push(chapter.value.trim());
             errorHappened = true;
-            break;
-        }
-        if(errorHappened){
             break;
         }
         // check image type

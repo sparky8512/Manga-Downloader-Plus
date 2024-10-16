@@ -75,28 +75,16 @@ function loveheavenF(){
             // storing download button for easy access
             pdfButtons.push(pdfButton);
             zipButtons.push(zipButton);
-            // to fetch pages number from chapter link
-            let xhttp = new XMLHttpRequest();
-            // added id to each xhttp request to know what button called it					
-            xhttp.id = i;
-            xhttp.chapterCount = rows.length;
-            xhttp.onreadystatechange = function () {
-                let waitNote = document.querySelector("span#md-batch-note");
-                let id = this.id;
-                let chapterCount = this.chapterCount;
-                let pdfButton = pdfButtons[id];
-                let zipButton = zipButtons[id];
-                // in case the page does not exist display and abort request
-                if(this.status === 404){
-                    pdfButton.textContent = "Not Found";
-                    zipButton.style.display = "none";
-                    this.abort();
-                }
-                // if the request succeed
-                if (this.readyState === 4 && this.status === 200) {
+            {
+                let id = i;
+                let chapterCount = rows.length;
+                fetchText(links[id], window.location.href).then((text) => {
+                    let waitNote = document.querySelector("span#md-batch-note");
+                    let pdfButton = pdfButtons[id];
+                    let zipButton = zipButtons[id];
                     // convert text to html DOM
                     let parser = new DOMParser();
-                    let doc = parser.parseFromString(this.responseText, "text/html");
+                    let doc = parser.parseFromString(text, "text/html");
                     let cid;
                     try {
                         cid = parseInt(doc.getElementById("chapter").value);
@@ -108,12 +96,7 @@ function loveheavenF(){
 
                     let rand = getRandom(30);
                     let url = (new URL(links[id])).origin+"/"+rand+".iog?cid="+cid;
-                    fetch(url,{referrer:links[id]}).then((res) => {
-                        if(res.ok) {
-                            return res.text();
-                        }
-                        throw res.status+" "+res.statusText;
-                    }).then((html) => {
+                    fetchText(url, links[id]).then((html) => {
                         let parser = new DOMParser();
                         let doc = parser.parseFromString(html, "text/html");
                         let imgs = doc.querySelectorAll("img.chapter-img");
@@ -147,13 +130,12 @@ function loveheavenF(){
                         pdfButton.textContent = "Not Found";
                         zipButton.style.display = "none";
                     });
-                }
-            };
-            xhttp.onerror = function (){
-                console.log("Failed to get "+links[i]);
-            };
-            xhttp.open("GET", links[i], true);
-            xhttp.send();
+                }).catch((err) => {
+                    console.log("Failed to get "+links[id]);
+                    pdfButton.textContent = "Not Found";
+                    zipButton.style.display = "none";
+                });
+            }
         }
     }
     // add batch download button

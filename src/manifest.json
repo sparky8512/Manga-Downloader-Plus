@@ -1,9 +1,9 @@
 {
-	"manifest_version": 2,
-	"name": "Manga Downloader",
-	"short_name" : "Manga Downloader",
-	"version": "3.11.2",
-	
+	"manifest_version": 3,
+	"name": "Manga Downloader+",
+	"short_name" : "Manga DL+",
+	"version": "4.0.0",
+
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
 	"icons": {
@@ -12,6 +12,9 @@
 		"128": "icons/md-128.png"
 	},
 	"permissions" : [
+		"declarativeNetRequestWithHostAccess"
+        ],
+	"host_permissions" : [
 		"*://*.imggur.net/*",
 		"*://*.imgur.com/*",
 		"*://mangakiss.org/*",
@@ -200,5 +203,9 @@
 			"index.js"
 		],
 		"css": ["Styles/md-style.css"]
-	} ]
+	} ],
+	"background": {
+		"scripts": ["background.js"],
+		"service_worker": "sworker.js"
+	}
 }

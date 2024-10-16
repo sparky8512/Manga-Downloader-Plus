@@ -48,25 +48,14 @@ function mangatownF() {
             // storing download button for easy access
             pdfButtons.push(pdfButton);
             zipButtons.push(zipButton);
-            // to fetch pages number from chapter link
-            let xhttp = new XMLHttpRequest();
-            // added id to each xhttp request to know what button called it					
-            xhttp.id = i;
-            xhttp.onreadystatechange = function () {
-                let id = this.id;
-                let pdfButton = pdfButtons[id];
-                let zipButton = zipButtons[id];
-                // in case the page does not exist display and abort request
-                if(this.status === 404){
-                    pdfButton.textContent = "Not Found";
-                    zipButton.style.display = "none";
-                    this.abort();
-                }
-                // if the request succeed
-                if (this.readyState === 4 && this.status === 200) {
+            {
+                let id = i;
+                fetchText(links[i], window.location.href).then((text) => {
+                    let pdfButton = pdfButtons[id];
+                    let zipButton = zipButtons[id];
                     // convert text to html DOM
                     let parser = new DOMParser();
-                    let doc = parser.parseFromString(this.responseText, "text/html");
+                    let doc = parser.parseFromString(text, "text/html");
 
                     pdfButton.imgs = [];
                     zipButton.imgs = [];
@@ -113,13 +102,12 @@ function mangatownF() {
                     zipButton.removeAttribute("disabled");
                     pdfButton.addEventListener("click", function(){getImgs(id,1);});
                     zipButton.addEventListener("click", function(){getImgs(id,2);});
-                }
-            };
-            xhttp.onerror = function (){
-                console.log("Failed to get "+links[i]);
-            };
-            xhttp.open("GET", links[i], true);
-            xhttp.send();
+                }).catch((err) => {
+                    console.log("Failed to get "+links[id]);
+                    pdfButton.textContent = "Not Found";
+                    zipButton.style.display = "none";
+                });
+            }
         }
     }
     // get all images links
@@ -162,45 +150,35 @@ function mangatownF() {
             // loop through chapter pages, starting with second page
             let index = 1;
             for(let i=2;i<=pages[id];i++){
-                let xhttp = new XMLHttpRequest();
-                xhttp.id = id;
-                xhttp.num = index;
-                xhttp.type = type;
-                xhttp.onreadystatechange = function (){
-                    let id = this.id;
-                    let num = this.num;
-                    let type = this.type;
-                    let pdfButton = pdfButtons[id];
-                    let zipButton = zipButtons[id];
-                    // if the request succeed
-                    if(this.readyState === 4 & this.status === 200){
-                        let parser = new DOMParser();
-                        let doc = parser.parseFromString(this.responseText, "text/html");
-                        let img = doc.querySelector("div.read_img img#image");
-                        // storing img link in button for easy access
-                        pdfButton.imgs[num] = img.src;
-                        zipButton.imgs[num] = img.src;
-                        pdfButtons[id].counter++;
-                        // changing button text to visualize process
-                        // the first 50%
-                        let percentage = (pdfButtons[id].counter * 50)/pages[id];
-                        button.textContent = parseInt(percentage)+"%";
-                        // if all links are found make pdf/zip file
-                        if(pdfButtons[id].counter === pages[id]){
-                            embedImages(pdfButton,zipButton,type,true);
-                        }
-                    }
-                };
-                xhttp.onerror = function (){
-                    console.log("Failed to get "+links[id]+"/"+i+".html");
-                };
-                // i because webpages starts from /1
                 let chapUrl = links[id];
                 if(!chapUrl.endsWith("/")){
                     chapUrl += "/";
                 }
-                xhttp.open("GET", chapUrl+i+".html");
-                xhttp.send();
+                // i because webpages starts from /1
+                chapUrl += i+".html";
+                let num = index;
+                fetchText(chapUrl, window.location.href).then((text) => {
+                    let pdfButton = pdfButtons[id];
+                    let zipButton = zipButtons[id];
+                    // if the request succeed
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(text, "text/html");
+                    let img = doc.querySelector("div.read_img img#image");
+                    // storing img link in button for easy access
+                    pdfButton.imgs[num] = img.src;
+                    zipButton.imgs[num] = img.src;
+                    pdfButtons[id].counter++;
+                    // changing button text to visualize process
+                    // the first 50%
+                    let percentage = (pdfButtons[id].counter * 50)/pages[id];
+                    button.textContent = parseInt(percentage)+"%";
+                    // if all links are found make pdf/zip file
+                    if(pdfButtons[id].counter === pages[id]){
+                        embedImages(pdfButton,zipButton,type,true);
+                    }
+                }).catch((err) => {
+                    console.log("Failed to get "+chapUrl+".html");
+                });
                 index++;
             }
         }
