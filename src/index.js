@@ -51,9 +51,10 @@ if(document.querySelector("span#azerty") === null){
         case "mangakakalot.com":
             mangakakalotF();
             break;
-        case "manganelo.com":
+        case "m.manganelo.com":
+        case "chapmanganelo.com":
         case "manganato.com":
-        case "readmanganato.com":
+        case "chapmanganato.to":
             manganeloF();
             break;
         case "ww5.readhaikyuu.com":

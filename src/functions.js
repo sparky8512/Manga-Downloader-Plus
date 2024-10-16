@@ -16,6 +16,9 @@ function handleErrors(response) {
 // check image arrayBuffer if it's a Jpeg
 function isJPEG(arrayBuffer){
     let data = new Uint8Array(arrayBuffer);
+    if (data.length < 2) {
+        return false;
+    }
     let jpgMgck = [0xff, 0xd8];
     if(data[0] === jpgMgck[0] && data[1] === jpgMgck[1]){
         return true;
@@ -26,6 +29,9 @@ function isJPEG(arrayBuffer){
 // check image arrayBuffer if it's a Png
 function isPNG(arrayBuffer){
     let data = new Uint8Array(arrayBuffer);
+    if (data.length < 2) {
+        return false;
+    }
     let pngMgck = [0x89, 0x50];
     if(data[0] === pngMgck[0] && data[1] === pngMgck[1]){
         return true;
@@ -35,7 +41,7 @@ function isPNG(arrayBuffer){
 }
 // convert image from arrayBuffer to jpeg as base64
 function imageToJpeg(arrayBuffer){
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         let arrayBufferView = new Uint8Array(arrayBuffer);
         let blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
         let urlCreator = window.URL || window.webkitURL;
@@ -47,8 +53,11 @@ function imageToJpeg(arrayBuffer){
             canvas.width = image.naturalWidth;
             canvas.height = image.naturalHeight;
             canvas.getContext("2d").drawImage(image, 0, 0);
-            let data = canvas.toDataURL("image/jpeg");
+            let data = canvas.toDataURL("image/jpeg").split(";base64,")[1];
             resolve(data);
+        });
+        image.addEventListener("error", () => {
+            reject("conversion error");
         });
         image.src = imageUrl;
     });
@@ -209,6 +218,9 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         if(type === 2){
             downloadFile(content,button.title.trim(),"zip");
         }
+    }, function(error) {
+        // probably not very useful, but better than silence:
+        alert("Internal error making ZIP file: "+error);
     });
     // enable the button after process is finished
     downloadFinished(pdfButton,zipButton);

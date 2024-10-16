@@ -110,8 +110,8 @@ function manganeloF() {
                     }
 
                     let ref = links[id];
-                    let server1 = "https://readmanganato.com/content_server_s1";
-                    let server2 = "https://readmanganato.com/content_server_s2";
+                    let server1 = "https://chapmanganato.to/content_server_s1";
+                    let server2 = "https://chapmanganato.to/content_server_s2";
 
                     pdfButton1.addEventListener("click", function(){getServerImages(pdfButton1,zipButton1,1,server1,ref);});
                     zipButton1.addEventListener("click", function(){getServerImages(pdfButton1,zipButton1,2,server1,ref);});
@@ -235,7 +235,7 @@ function manganeloF() {
         let waitNote = document.querySelector("span#md-batch-note");
         waitNote.textContent = "wait, getting images links from each chapter";
         waitNote.textContent = "wait, 0/"+rows.length+" Chapters.";
-        let server = "https://readmanganato.com/content_server_s1";
+        let server = "https://chapmanganato.to/content_server_s1";
         for(let i=0;i<rows.length;i++){
             // store chapter link
             let chapterUrl = rows[i].querySelector("a").href;
