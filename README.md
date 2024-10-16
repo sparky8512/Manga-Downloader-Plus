@@ -1,3 +1,9 @@
+NOTE: This is a fork of https://github.com/AllaliAdil/Manga-Downloader-Extension, which is no longer being maintained.
+
+Original README follows, note that some parts are out of date.
+
+---
+
 # IMPORTANT NOTE
 -New websites will not be add for now. The SOURCE CODE is available, you can add the websites you want.  
 
