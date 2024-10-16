@@ -523,3 +523,26 @@ function batchDownloadFinished(pdfButtonBatch,zipButtonBatch,chapterList,progres
     pdfButtonBatch.down = false;
     zipButtonBatch.down = false;
 }
+
+// run async operations in parallel
+function runAsyncTaskQueue(func, argQueue, maxParallel) {
+    return new Promise((resolve, reject) => {
+        let queuedCount = 0;
+
+        function queueNext() {
+            if (argQueue.length > 0) {
+                func(argQueue.shift()).finally(queueNext);
+            } else {
+                queuedCount--;
+                if (queuedCount == 0) {
+                    resolve();
+                }
+            }
+        }
+
+        while (argQueue.length > 0 && queuedCount < maxParallel) {
+            queuedCount++;
+            func(argQueue.shift()).finally(queueNext);
+        }
+    });
+}

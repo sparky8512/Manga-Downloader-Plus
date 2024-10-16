@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Manga Downloader+",
 	"short_name" : "Manga DL+",
-	"version": "4.0.0",
+	"version": "4.0.1",
 
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
@@ -127,6 +127,7 @@
 		"*://*.sailmg.com/*",
 		"*://*.manhuaplus.com/*",
 		"*://*.mangakomicdn.com/*",
+		"*://*.mangaclash.com/*",
 		"*://zjcdn.mangafox.me/*"
 	],
 	"content_scripts": [ {
@@ -187,6 +188,7 @@
 			"External/pdf-lib.js",
 			"External/jszip.js",
 			"functions.js",
+			"Scripts/template.js",
 			"Scripts/mangakiss.js",
 			"Scripts/mangakakalot.js",
 			"Scripts/manganelo.js",

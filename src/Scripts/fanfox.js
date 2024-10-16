@@ -1,29 +1,29 @@
 function fanfoxF() {
-    // to store links of each chapter
-    let links = [];
-    // get all chapters displayed in the table
-    let rows;
-    // to store download button for easy access
-    let pdfButtons = [];
-    let zipButtons = [];
-    // to store all chapters images for batch Download (store the buttons)
-    let chaptersData = [];
-    // check if viewing chapters list page
-    if(document.querySelector("div#chapterlist") !== null){
-        rows = document.querySelectorAll("div#chapterlist ul.detail-main-list > li");
-        addNote();
-        addBatchDownload();
-        addDownloadButtons();
-    }
-    // add a note for users
-    function addNote(){
+    let templateFuncs = {};
+
+    templateFuncs.isChapterListPage = function() {
+        return document.querySelector("div#chapterlist") !== null;
+    };
+
+    templateFuncs.getChapterElems = function() {
+        return document.querySelectorAll("div#chapterlist ul.detail-main-list > li");
+    };
+
+    templateFuncs.insertNote = function(note) {
         let chapterDiv = document.querySelector("div#chapterlist");
-        let note = document.createElement("span");
-        note.id = "md-note";
-        note.style.fontSize = "x-large";
-        note.style.color = "black";
         chapterDiv.insertBefore(note,chapterDiv.firstChild);
-    }
+    };
+
+    templateFuncs.processChapterElem = function(elem, pdfButton, zipButton) {
+        let link = elem.querySelector("a").href;
+        let title = elem.querySelector("a").title.trim();
+
+        elem.appendChild(pdfButton, elem);
+        elem.appendChild(zipButton, elem);
+
+        return [link, title];
+    };
+
     // unpack a script packed with Dean Edwards' packer
     function unpackPacker(packed){
         if(!packed.endsWith(".split('|'),0,{}))")){
@@ -67,8 +67,9 @@ function fanfoxF() {
             return null;
         }
     }
-    function fetchChapData(pdfButton, zipButton, page, ref){
-        let dataUrl = new URL("chapterfun.ashx?cid="+pdfButton.cid+"&page="+page+"&key="+pdfButton.token, ref);
+
+    function fetchChapData(page, ref, token, cid, pages, chapImgs, reportProgress) {
+        let dataUrl = new URL("chapterfun.ashx?cid="+cid+"&page="+page+"&key="+token, ref);
         return fetchText(dataUrl, ref).then((text) => {
             let unpacked = unpackPacker(text.trim());
             if(!unpacked.includes("pvalue=[")) {
@@ -96,278 +97,56 @@ function fanfoxF() {
 
             for(let i=0; i<imgs.length; i++){
                 let url = (new URL((i == 0 ? base0 : base)+imgs[i], ref)).href;
-                pdfButton.imgs.push(url);
-                zipButton.imgs.push(url);
+                chapImgs.push(url);
             }
+
+            if (chapImgs.length < pages) {
+                reportProgress(chapImgs.length/pages);
+                return fetchChapData(chapImgs.length+1, ref, token, cid, pages, chapImgs, reportProgress);
+            }
+            return chapImgs;
         });
     }
-    // add download buttons 
-    function addDownloadButtons(){
-        for (let i=0;i<rows.length;i++) {
-            let pdfButton = document.createElement("button");
-            let zipButton = document.createElement("button");
 
-            pdfButton.textContent = "pdf";
-            zipButton.textContent = "zip";
-
-            // store chapter link
-            links[i] = rows[i].querySelector("a").href;
-            pdfButton.referrerLink = rows[i].querySelector("a").href;
-
-            pdfButton.title = rows[i].querySelector("a").title.trim();
-            zipButton.title = pdfButton.title;
-            pdfButton.disabled = "true";
-            zipButton.disabled = "true";
-            rows[i].appendChild(pdfButton,rows[i]);
-            rows[i].appendChild(zipButton,rows[i]);
-
-            // storing download button for easy access
-            pdfButtons.push(pdfButton);
-            zipButtons.push(zipButton);
-
-            {
-                let id = i;
-                let chapterCount = rows.length;
-                fetchText(links[id], window.location.href).then((text) => {
-                    let waitNote = document.querySelector("span#md-batch-note");
-                    let pdfButton = pdfButtons[id];
-                    let zipButton = zipButtons[id];
-                    // convert text to html DOM
-                    let parser = new DOMParser();
-                    let doc = parser.parseFromString(text, "text/html");
-                    let scripts = doc.querySelectorAll("script");
-                    for(let script of scripts){
-                        if(!script.innerText.includes("p,a,c,k,e,")){
-                            continue;
-                        }
-                        let unpacked = unpackPacker(script.innerText.trim());
-                        if(unpacked.startsWith("var newImgs=[")){
-                            let end = unpacked.indexOf("];var newImginfos=");
-                            if(end == -1){
-                                continue;
-                            }
-                            let imgs = JSON.parse(unpacked.slice(12, end+1).replaceAll("\\'",'"'));
-                            pdfButton.imgs = [];
-                            zipButton.imgs = [];
-                            for(let img of imgs){
-                                let url = (new URL(img, links[id])).href;
-                                pdfButton.imgs.push(url);
-                                zipButton.imgs.push(url);
-                            }
-
-                            // store the button with all the images for batch download
-                            chaptersData[id] = {
-                                title: pdfButton.title,
-                                images: pdfButton.imgs,
-                                referrerLink: links[id]
-                            };
-                            // check if all buttons are add
-                            let len = chaptersData.reduce((acc,cv)=>(cv)?acc+1:acc,0);
-                            waitNote.textContent = "wait, "+len+"/"+chapterCount+" Chapters.";
-                            if(len === chapterCount){
-                                addChaptersToList();
-                            }
-
-                            pdfButton.removeAttribute("disabled");
-                            zipButton.removeAttribute("disabled");
-                            pdfButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,1);});
-                            zipButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,2);});
-                            return;
-                        }
-                        else if(unpacked.startsWith("var guidkey=\\'")){
-                            //let parts = unpacked.match(/var\\w+pix="([^\"]*)\";/);
-                            let parts = unpacked.match(/guidkey=\\'([^;]*)\\';/);
-                            if(parts === null) {
-                                continue;
-                            }
-                            pdfButton.token = parts[1].replaceAll("\\'+\\'","");
-                            parts = text.match(/var\s+chapterid\s*=\s*([^;]*)\s*;/);
-                            pdfButton.cid = parts[1];
-                            parts = text.match(/var\s+imagecount\s*=\s*([^;]*)\s*;/);
-                            pdfButton.pages = parseInt(parts[1]);
-                            pdfButton.imgs = [];
-                            zipButton.imgs = [];
-
-                            fetchChapData(pdfButton, zipButton, 1, links[id]).then(() => {
-                                // store the button with all the images for batch download
-                                chaptersData[id] = {
-                                    title: pdfButton.title,
-                                    images: pdfButton.imgs,
-                                    referrerLink: links[id]
-                                };
-                                // check if all buttons are add
-                                let len = chaptersData.reduce((acc,cv)=>(cv)?acc+1:acc,0);
-                                waitNote.textContent = "wait, "+len+"/"+chapterCount+" Chapters.";
-                                if(len === chapterCount){
-                                    addChaptersToList();
-                                }
-
-                                pdfButton.removeAttribute("disabled");
-                                zipButton.removeAttribute("disabled");
-                                pdfButton.addEventListener("click", function(){getServerImages(pdfButton,zipButton,1,links[id]);});
-                                zipButton.addEventListener("click", function(){getServerImages(pdfButton,zipButton,2,links[id]);});
-                            }).catch((error) => {
-                                console.log("Failed data fetch: "+error);
-                                pdfButton.textContent = "Not Found";
-                                zipButton.style.display = "none";
-                            });
-                            return;
-                        }
+    templateFuncs.getChapterImageUrls = function(chapterUrl, buttonGroup, reportProgress) {
+        return fetchText(chapterUrl, window.location.href).then((text) => {
+            // convert text to html DOM
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(text, "text/html");
+            let scripts = doc.querySelectorAll("script");
+            for(let script of scripts){
+                if(!script.innerText.includes("p,a,c,k,e,")){
+                    continue;
+                }
+                let unpacked = unpackPacker(script.innerText.trim());
+                if(unpacked.startsWith("var newImgs=[")){
+                    let end = unpacked.indexOf("];var newImginfos=");
+                    if(end == -1){
+                        continue;
                     }
-                    pdfButton.textContent = "Not Found";
-                    zipButton.style.display = "none";
-                }).catch((err) => {
-                    console.log("Failed to get "+links[id]);
-                    pdfButton.textContent = "Not Found";
-                    zipButton.style.display = "none";
-                });
-            }
-        }
-    }
-    async function getServerImages(pdfButton,zipButton,type, ref) {
-        pdfButton.disabled = "true";
-        zipButton.disabled = "true";
-
-        while(pdfButton.imgs.length < pdfButton.pages) {
-            try {
-                await fetchChapData(pdfButton, zipButton, pdfButton.imgs.length+1, ref);
-            } catch(error) {
-                console.log("Failed data fetch: "+error);
-                pdfButton.removeAttribute("disabled");
-                zipButton.removeAttribute("disabled");
-                return;
-            }
-        }
-        embedImages(pdfButton,zipButton,type);
-    }
-    // add batch download button
-    function addBatchDownload(){
-        // add the floatDiv to document body
-        let floatDiv = document.createElement("div");
-        floatDiv.id = "md-floatDiv";
-        floatDiv.classList.add("md-float-modal");
-        let floatDivContent = document.createElement("div");
-        floatDivContent.classList.add("md-float-modal-content");
-        let floatCloseButton = document.createElement("span");
-        floatCloseButton.classList.add("md-float-close");
-        floatCloseButton.innerHTML = "&times;";
-
-        floatDivContent.appendChild(floatCloseButton);
-        floatDiv.appendChild(floatDivContent);
-        document.body.appendChild(floatDiv);
-
-        // to close floating div
-        floatCloseButton.onclick = function() {
-            floatDiv.style.display = "none";
-        };
-
-        // create the button that show the floatDiv
-        let batchDownloadButton = document.createElement("button");
-        batchDownloadButton.textContent = "Batch Download";
-        batchDownloadButton.id = "md-batch-download-button";
-        batchDownloadButton.title = "Download multiple chapters at once";
-        batchDownloadButton.classList.add("md-download-button");
-        batchDownloadButton.disabled = "true";
-        
-        let waitNote = document.createElement("span");
-        waitNote.textContent = "wait, getting data from all chapters";
-        waitNote.id = "md-batch-note";
-        let holder = document.createElement("span");
-        holder.appendChild(batchDownloadButton);
-        holder.appendChild(waitNote);
-        // append batch button after the note
-        let theNote = document.querySelector("span#md-note");
-        theNote.parentElement.insertBefore(holder,theNote.nextElementSibling);
-
-        let floatDivChapterList = document.createElement("select");
-        floatDivChapterList.id = "md-float-chapter-list";
-        floatDivChapterList.size = 20;
-        floatDivChapterList.multiple = true;
-
-        floatDivContent.appendChild(floatDivChapterList);
-
-        let pdfButtonBatch = document.createElement("button");
-        pdfButtonBatch.classList.add("md-download-button");
-        pdfButtonBatch.textContent = "Download Selected Chapter/s as PDF files";
-        let zipButtonBatch = document.createElement("button");
-        zipButtonBatch.classList.add("md-download-button");
-        zipButtonBatch.textContent = "Download Selected Chapter/s as ZIP files";
-
-        let buttonHolder = document.createElement("span");
-        buttonHolder.appendChild(pdfButtonBatch);
-        buttonHolder.appendChild(zipButtonBatch);
-
-        floatDivContent.appendChild(buttonHolder);
-
-        async function checkChapData() {
-            let options = Array.from(floatDivChapterList.selectedOptions);
-            for(option of options){
-                let id = option.index;
-                let pdfButton = pdfButtons[id];
-                while(pdfButton.imgs.length < pdfButton.pages) {
-                    try {
-                        await fetchChapData(pdfButton, zipButtons[id], pdfButton.imgs.length+1, links[id]);
-                    } catch(error) {
-                        console.log("Failed data fetch: "+error);
-                        option.selected = false;
-                        option.disabled = true;
-                        option.textContent += " FAILED";
-                        break;
+                    let imgs = JSON.parse(unpacked.slice(12, end+1).replaceAll("\\'",'"'));
+                    for (let i=0; i<imgs.length; i++) {
+                        imgs[i] = (new URL(imgs[i], chapterUrl)).href;
                     }
+                    return imgs;
+                }
+                if (unpacked.startsWith("var guidkey=\\'")) {
+                    let parts = unpacked.match(/guidkey=\\'([^;]*)\\';/);
+                    if(parts === null) {
+                        continue;
+                    }
+                    let token = parts[1].replaceAll("\\'+\\'","");
+                    parts = text.match(/var\s+chapterid\s*=\s*([^;]*)\s*;/);
+                    let cid = parts[1];
+                    parts = text.match(/var\s+imagecount\s*=\s*([^;]*)\s*;/);
+                    let pages = parseInt(parts[1]);
+
+                    return fetchChapData(1, chapterUrl, token, cid, pages, [], reportProgress);
                 }
             }
-        }
-
-        pdfButtonBatch.addEventListener("click", async function(){
-            await checkChapData();
-            if(floatDivChapterList.selectedOptions.length > 0){
-                batchEmbedImages(pdfButtonBatch,zipButtonBatch,1,floatDivChapterList,batchProgressBar);
-            }
+            throw "Image list not found";
         });
+    };
 
-        zipButtonBatch.addEventListener("click", async function(){
-            await checkChapData();
-            if(floatDivChapterList.selectedOptions.length > 0){
-                batchEmbedImages(pdfButtonBatch,zipButtonBatch,2,floatDivChapterList,batchProgressBar);
-            }
-        });
-
-        let batchProgressContainer = document.createElement("div");
-        batchProgressContainer.classList.add("md-progress-container");
-        let batchProgressBar = document.createElement("div");
-        batchProgressBar.classList.add("md-progress-bar");
-        batchProgressBar.textContent = "0%";
-        batchProgressBar.style.display = "none";
-
-        batchProgressContainer.appendChild(batchProgressBar);
-        floatDivContent.appendChild(batchProgressContainer);
-    }
-    // add chapters to list inside floatDiv
-    function addChaptersToList(){
-        let waitNote = document.querySelector("span#md-batch-note");
-        waitNote.textContent = "wait, adding Chapters to list.";
-        let floatDivChapterList = document.querySelector("select#md-float-chapter-list");
-
-        for(let i=0 ;i<chaptersData.length ;i++){
-            let option = document.createElement("option");
-            option.textContent = chaptersData[i].title;
-            option.value = chaptersData[i].title;
-            option.imgs = chaptersData[i].images;
-            if(option.imgs === 0){
-                option.disabled = true;
-            }
-            option.ref = chaptersData[i].referrerLink;
-            floatDivChapterList.appendChild(option);
-        }
-
-        waitNote.textContent = "Its Ready.";
-        waitNote.style.display = "none";
-        
-        let batchDownloadButton = document.querySelector("button#md-batch-download-button");
-        batchDownloadButton.onclick = function(){
-            let floatDiv = document.querySelector("div#md-floatDiv");
-            floatDiv.style.display = "block";
-        };
-        batchDownloadButton.removeAttribute("disabled");
-    }
+    templateF(templateFuncs);
 }
