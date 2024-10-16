@@ -26,12 +26,6 @@ As of 2024-Oct, the following websites have been confirmed to work:
 - `manga4life.com`
 - `webtoons.com`
 - `mangatown.com` (works for some titles, not others)
-
-The following websites still appear to be running, but support by this extension is currently broken:
-
-- `mangakomi.com` / `mangakomi.io`
-- `manhuaplus.com`
-- `manhuaus.com`
 - `readhaikyuu.com`
 - `readsnk.com` (Shingeki no Kyojin)
 - `readbleachmanga.com`
@@ -53,6 +47,19 @@ The following websites still appear to be running, but support by this extension
 - `readvinlandsaga.com`
 - `read7deadlysins.com`
 - `readhxh.com` (Hunter X Hunter)
+- `readkagurabachimanga.com`
+- `readichithewitch.com`
+- `bluelockread.com`
+- `readjojos.com`
+- `readsakadays.com`
+- `readundead.com` (Undead Unluck)
+- `readtokyorevengers.net`
+
+The following websites still appear to be running, but support by this extension is currently broken:
+
+- `mangakomi.com` / `mangakomi.io`
+- `manhuaplus.com`
+- `manhuaus.com`
 - `sailmg.com` (MangaSail)
 - `mangasaki.com` (redirects to `sailmg.com`, which is similar, but not quite same site)
 - `kissaway.net` / `klmanga.com` (redirects to `klz9.com`)

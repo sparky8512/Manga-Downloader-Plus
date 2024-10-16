@@ -34,6 +34,7 @@ function readblackcloverF() {
     }
     // add download button for each chapter
     function addDownloadButtons(){
+        let index = 0;
         for (let i=0;i<rows.length;i++) {
             let pdfButton = document.createElement("button");
             let zipButton = document.createElement("button");
@@ -44,15 +45,18 @@ function readblackcloverF() {
             // disable the button until fetching images links
             pdfButton.disabled = "true";
             zipButton.disabled = "true";
+            if(rows[i].querySelector("div.col-span-4 a") === null){
+                continue;
+            }
             // get title
-            let title = rows[i].querySelector("div.col-span-3 a").textContent;
-            title += " "+rows[i].querySelector("div.col-span-3 div.text-xs").textContent;
+            let title = rows[i].querySelector("div.col-span-4 a").textContent;
+            title += " "+rows[i].querySelector("div.col-span-4 div.text-xs").textContent;
             pdfButton.title = title;
             zipButton.title = title;
             // store chapter link
-            links[i] = rows[i].querySelector("div.col-span-1 a").href;
-            pdfButton.referrerLink = rows[i].querySelector("div.col-span-1 a").href;
-            let holder = rows[i].querySelector("div.col-span-1 a").parentElement;
+            links[index] = rows[i].querySelector("div.lg\\:col-span-1 a").href;
+            pdfButton.referrerLink = rows[i].querySelector("div.lg\\:col-span-1 a").href;
+            let holder = rows[i].querySelector("div.lg\\:col-span-1 a").parentElement;
             holder.appendChild(pdfButton);
             holder.appendChild(zipButton);
             // storing download button for easy access
@@ -61,7 +65,7 @@ function readblackcloverF() {
             // to fetch pages number from chapter link
             let xhttp = new XMLHttpRequest();
             // added id to each xhttp request to know what button called it					
-            xhttp.id = i;
+            xhttp.id = index;
             xhttp.chapterCount = rows.length;
             xhttp.onreadystatechange = function () {
                 let waitNote = document.querySelector("span#md-batch-note");
@@ -113,10 +117,11 @@ function readblackcloverF() {
                 }
             };
             xhttp.onerror = function (){
-                console.log("Failed to get "+links[i]);
+                console.log("Failed to get "+links[index]);
             };
-            xhttp.open("GET", links[i]);
+            xhttp.open("GET", links[index]);
             xhttp.send();
+            index++;
         }
     }
     // add batch download button
