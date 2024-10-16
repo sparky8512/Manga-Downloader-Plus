@@ -17,7 +17,7 @@
 		"*://mangakiss.org/*",
 		"*://cdn.toonily.com/*",
 		"*://*.blogspot.com/*",
-		"*://*.mangakomi.com/*",
+		"*://*.mangakomi.io/*",
 		"*://*.mkklcdn.com/*",
 		"*://*.mkklcdnv2.com/*",
 		"*://*.mkklcdnv3.com/*",
@@ -128,7 +128,7 @@
 	"content_scripts": [ {
 		"matches": [
 			"*://mangakiss.org/*",
-			"*://mangakomi.com/*",
+			"*://mangakomi.io/*",
 			"*://mangakakalot.com/*",
 			"*://*.manganelo.com/*",
 			"*://chapmanganelo.com/*",
@@ -192,7 +192,6 @@
 			"Scripts/mangasee123.js",
 			"Scripts/webtoons.js",
 			"Scripts/mangasail.js",
-			"Scripts/manhuaus.js",
 			"Scripts/mangatown.js",
 			"Scripts/loveheaven.js",
 			"index.js"

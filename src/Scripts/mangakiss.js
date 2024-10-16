@@ -11,15 +11,13 @@ function mangakissF() {
     let chaptersData = [];
     switch (host) {
         case "mangakiss.org":
+        case "manhuaus.com":
             if(document.querySelector("div.listing-chapters_wrap") !== null){
                 loops = 0;
                 doLoop();
             }
             break;
         case "manhuaplus.com":
-        case "aloalivn.com":
-        case "365manga.com":
-        case "mangafort.com":
             if(document.querySelector("div.listing-chapters_wrap") !== null){
                 loops = 0;
                 doLoop();
@@ -64,7 +62,7 @@ function mangakissF() {
             });
         }
     }
-    // loop for 360s for the chapters to show
+    // loop for 60s for the chapters to show
     function loop() {
         if(document.querySelector("div.listing-chapters_wrap > i.fa-spinner")){
             if(loops < 60){
@@ -139,20 +137,14 @@ function mangakissF() {
                     let parser = new DOMParser();
                     let doc = parser.parseFromString(this.responseText, "text/html");
                     let imgs = doc.querySelectorAll("div.page-break > img.wp-manga-chapter-img");
-                    if(host === "aloalivn.com" || host === "manhuaplus.com"){
-                        imgs = doc.querySelectorAll("div.reading-content ul.blocks-gallery-grid > li.blocks-gallery-item img");
-                    }
                     if(host === "manhuaplus.com"){
-                        imgs = doc.querySelectorAll("div.reading-content div#chapter-video-frame > p img");
+                        imgs = doc.querySelectorAll("div.reading-content p > img");
                     }
                     pdfButton.imgs = [];
                     zipButton.imgs = [];
                     for(let img of imgs){
                         let src = img.dataset.src !== undefined ? img.dataset.src : img.dataset.lazySrc;
-                        src = src === undefined ? img.src : src;
-                        if(host === "mangafort.com" && src.indexOf("/uploads/uploads/") !== -1){
-                            src = "https://mangafort.com"+src;
-                        }
+                        src = src === undefined ? img.src : src.trim();
                         pdfButton.imgs.push(src);
                         zipButton.imgs.push(src);
                     }

@@ -15,15 +15,13 @@ if(document.querySelector("span#azerty") === null){
 
     switch (host) {
         case "mangakiss.org":
-        case "mangakomi.com":
+        case "mangakomi.io":
         case "toonily.com":
         case "mangatx.to":
         case "manhuaplus.com":
         case "toonclash.com":
-            mangakissF();
-            break;
         case "manhuaus.com":
-            manhuausF();
+            mangakissF();
             break;
         case "mangakakalot.com":
             mangakakalotF();

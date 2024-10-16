@@ -15,7 +15,9 @@ As of 2024-Oct, the following websites have been confirmed to work:
 - `mangakiss.org`
 - `toonily.com`
 - `mangatx.to`
+- `manhuaplus.com`
 - `toonclash.com` (Manga Clash)
+- `manhuaus.com`
 - `mangakakalot.com`
 - `manganelo.com`
 - `manganato.com`
@@ -60,8 +62,6 @@ As of 2024-Oct, the following websites have been confirmed to work:
 The following websites still appear to be running, but support by this extension is currently broken:
 
 - `mangakomi.com` / `mangakomi.io`
-- `manhuaplus.com`
-- `manhuaus.com`
 
 The following previously supported websites appear to be permanently offline:
 
