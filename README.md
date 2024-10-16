@@ -54,14 +54,13 @@ As of 2024-Oct, the following websites have been confirmed to work:
 - `readsakadays.com`
 - `readundead.com` (Undead Unluck)
 - `readtokyorevengers.net`
+- `sailmg.com` (MangaSail, `mangasaki.com` now also redirects here)
 
 The following websites still appear to be running, but support by this extension is currently broken:
 
 - `mangakomi.com` / `mangakomi.io`
 - `manhuaplus.com`
 - `manhuaus.com`
-- `sailmg.com` (MangaSail)
-- `mangasaki.com` (redirects to `sailmg.com`, which is similar, but not quite same site)
 - `kissaway.net` / `klmanga.com` (redirects to `klz9.com`)
 
 The following previously supported websites appear to be permanently offline:

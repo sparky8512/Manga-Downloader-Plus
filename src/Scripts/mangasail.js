@@ -111,8 +111,10 @@ function mangasailF() {
                     zipButton.imgs = [];
 
                     for(let img of imagesData){
-                        pdfButton.imgs.push(img);
-                        zipButton.imgs.push(img);
+                        if(img.startsWith("https://") || img.startsWith("http://")){
+                            pdfButton.imgs.push(img);
+                            zipButton.imgs.push(img);
+                        }
                     }
 
                     // store the button with all the images for batch download
