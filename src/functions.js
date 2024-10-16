@@ -8,7 +8,6 @@ function looseJsonParse(obj){
 // handle errors from fetching
 function handleErrors(response) {
     if (!response.ok) {
-        clearConsole();
         throw "response is not ok";
     }
     return response;
@@ -143,7 +142,6 @@ async function embedImages(pdfButton,zipButton,type,half=false){
             imageBytes = await fetch(imgUrl, {
                 referrer: referrerLink
             }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
-                clearConsole();
                 alert("(Manga Downloader) Can't fetch image.\n"+imgUrl);
                 downloadFinished(pdfButton,zipButton);
                 return;
@@ -296,12 +294,10 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             imageBytes = await fetch(imgUrl, {
                 referrer: referrerLink
             }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
-                clearConsole();
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
             });
         } catch (error) {
-            clearConsole();
             if(!errorHappened){
                 progressBar.failedChapters.push(chapter.value.trim());
             }
@@ -324,7 +320,6 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             try {
                 imageBytes = await imageToJpeg(imageBytes);
             } catch (error) {
-                clearConsole();
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
                 break;
@@ -338,7 +333,6 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             try {
                 image = await pdfDoc.embedPng(imageBytes);
             } catch (error) {
-                clearConsole();
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
                 break;
@@ -414,12 +408,10 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             imageBytes = await fetch(imgUrl, {
                 referrer: referrerLink
             }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
-                clearConsole();
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
             });
         } catch (error) {
-            clearConsole();
             if(!errorHappened){
                 progressBar.failedChapters.push(chapter.value.trim());
             }
@@ -443,7 +435,6 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             try {
                 imageBytes = await imageToJpeg(imageBytes);
             } catch (error) {
-                clearConsole();
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
                 break;

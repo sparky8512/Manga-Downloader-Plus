@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Manga Downloader",
 	"short_name" : "Manga Downloader",
-	"version": "3.11.0",
+	"version": "3.11.1",
 	
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
@@ -166,7 +166,6 @@
 		"js": [
 			"External/pdf-lib.js",
 			"External/jszip.js",
-			"clear.js",
 			"functions.js",
 			"Scripts/mangakiss.js",
 			"Scripts/mangakakalot.js",

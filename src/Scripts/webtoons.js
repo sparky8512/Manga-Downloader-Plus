@@ -94,7 +94,7 @@ function webtoonsF() {
                 }
             };
             xhttp.onerror = function (){
-                clearConsole();
+                console.log("Failed to get "+links[i]);
             };
             xhttp.open("GET", links[i]);
             xhttp.send();
@@ -197,7 +197,6 @@ function webtoonsF() {
         }
         waitNote.textContent = "wait, getting the number of pages";
         var pageText = await fetch(lastPage).then(res => res.text()).catch(error => {
-            clearConsole();
             waitNote.textContent = "Failed, try to reload the page.";
             return;
         });
@@ -209,7 +208,6 @@ function webtoonsF() {
         waitNote.textContent = "wait, 0/"+pageCount+" pages.";
         for(let i=1;i<=pageCount;i++){
             let text = await fetch(mangaUrl+"&page="+i).then(res => res.text()).catch(error => {
-                clearConsole();
                 waitNote.textContent = "Failed, try to reload the page.";
                 return;
             });
@@ -236,7 +234,6 @@ function webtoonsF() {
         waitNote.textContent = "wait, 0/"+allChapters.length+" Chapters.";
         for(let i=0 ; i<allChapters.length ;i++){
             let text = await fetch(allChapters[i].link).then(res => res.text()).catch(error => {
-                clearConsole();
                 waitNote.textContent = "Failed, try to reload the page.";
                 return;
             });

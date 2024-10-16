@@ -159,7 +159,7 @@ function mangasee123F() {
                 }
             };
             xhttp.onerror = function (){
-                clearConsole();
+                console.log("Failed to get "+links[i]);
             };
             xhttp.open("GET", links[i]);
             xhttp.send();

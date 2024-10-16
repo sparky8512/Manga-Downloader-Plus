@@ -124,7 +124,7 @@ function mangakakalotF() {
                 }
             };
             xhttp.onerror = function (){
-                clearConsole();
+                console.log("Failed to get "+links[i]);
             };
             xhttp.open("GET", links[i]);
             xhttp.send();
@@ -136,7 +136,6 @@ function mangakakalotF() {
         zipButton.disabled = "true";
 
         let html = await fetch(server,{referrer:ref}).then(res => res.text()).catch(error => {
-            clearConsole();
             pdfButton.removeAttribute("disabled");
             zipButton.removeAttribute("disabled");
             return;
@@ -247,7 +246,6 @@ function mangakakalotF() {
             let title = rows[i].querySelector("a").textContent;
 
             let html = await fetch(server,{referrer:chapterUrl}).then(res => res.text()).catch(error => {
-                clearConsole();
                 waitNote.textContent = "Failed, try to reload the page.";
                 return;
             });

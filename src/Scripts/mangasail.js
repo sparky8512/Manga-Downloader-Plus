@@ -136,7 +136,7 @@ function mangasailF() {
                 }
             };
             xhttp.onerror = function (){
-                clearConsole();
+                console.log("Failed to get "+links[i]);
             };
             xhttp.open("GET", links[i], true);
             xhttp.send();

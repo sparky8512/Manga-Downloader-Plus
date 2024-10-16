@@ -95,7 +95,7 @@ function mangatownF() {
                 }
             };
             xhttp.onerror = function (){
-                clearConsole();
+                console.log("Failed to get "+links[i]);
             };
             xhttp.open("GET", links[i], true);
             xhttp.send();
@@ -168,7 +168,7 @@ function mangatownF() {
                     }
                 };
                 xhttp.onerror = function (){
-                    clearConsole();
+                    console.log("Failed to get "+links[id]+"/"+i+".html");
                 };
                 // i because webpages starts from /1
                 xhttp.open("GET", links[id]+"/"+i+".html");
