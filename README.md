@@ -1,100 +1,89 @@
 NOTE: This is a fork of https://github.com/AllaliAdil/Manga-Downloader-Extension, which is no longer being maintained.
 
-Original README follows, note that some parts are out of date.
+Original README follows, updated to reflect current working state per website.
 
 ---
 
 # IMPORTANT NOTE
--New websites will not be add for now. The SOURCE CODE is available, you can add the websites you want.  
 
-# Manga-Downloader-Extension
-Chrome/Firefox extension to download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.  
-
-<img src="https://lh3.googleusercontent.com/Xd9OW_viKyKMmdcPlqqHllkhGpCQmK-_xPuRKolVOJ5DnPjhgp3RDYKmqYe70bTTp8-IjC0-zw=w128-h128-e365-rj-sc0x00ffffff" alt="Manga Downloader">
-
-# How to install (Chromium 80 / Firefox 86)  
-https://github.com/AllaliAdil/Manga-Downloader-Extension/tree/main/Browsers
-
-# Chrome 80 or less
-https://chrome.google.com/webstore/detail/manga-downloader/fojcpnmhelbpakmgaakfhjlmjokocgjg
-
-# FireFox
-https://addons.mozilla.org/en-US/firefox/addon/manga-downloader/
+New websites will not be add for now, unless they are clones of an already supported one. The SOURCE CODE is available, you can add the websites you want.  
 
 # Supported Websites
-    -The source code is available, you can add the websites you want.
 
-    -mangakiss.org
-    -mangakomi.com
-    -mangakakalot.com
-    -manganelo.com
-    -readnaruto.com (Naruto & Boruto)
-    -tokyoghoulre.com
-    -readhaikyuu.com
-    -readopm.com (One Punch Man)
-    -readonepiece.com
-    -readsnk.com (Shingeki no Kyojin)
-    -readfairytail.com
-    -readblackclover.com
-    -readbleachmanga.com
-    -readneverland.com
-    -readnoblesse.com
-    -readkingdom.com
-    -readtowerofgod.com
-    -readvinlandsaga.com
-    -readmha.com (My Hero Academia)
-    -readkaguyasama.com
-    -readjujutsukaisen.com
-    -readchainsawman.com
-    -demonslayermanga.com
-    -read7deadlysins.com
-    -readsololeveling.org
-    -readhxh.com (Hunter X Hunter)
-    -readberserk.com
-    -readdrstone.com
-    -dbsmanga.com (Dragon Ball Super)
-    -rawdevart.com
-    -mangasee123.com
-    -webtoons.com
-    -manga4life.com
-    -mangafort.com
-    -1stkissmanga.com
-    -mangasail.co
-    -mangatail.me    (redirect to www.mangasaki.com)
-    -www.mangasaki.com
-    -zinmanga.com
-    -365manga.com
-    -toonily.net
-    -manhuaus.com
-    -mangatx.com
-    -readmanhwa.com
-    -mangatown.com
-    -www.qiman6.com
-    -qingman5.com
-    -full-metal-alchemist.com
-    -manhuaplus.com
-    -mangaclash.com
-    -www.funmanga.com
-    -www.mngdoom.com
-    -www.mangainn.net
-    -mangafast.net
-    -kissaway.net
+As of 2024-Oct, the following websites have been confirmed to work:
 
-    -kissmanga.com (Terminated)
-    -mangareader.net (Not working)
-    -mangapanda.com	(Not working)
-    -ww3.mangafox.online (most of the images don't show)
-    
+- `mangakiss.org`
+- `toonily.com`
+- `mangatx.to`
+- `toonclash.com` (Manga Clash)
+- `mangakakalot.com`
+- `manganelo.com`
+- `manganato.com`
+- `readopm.com` (One Punch Man)
+- `readberserk.com`
+- `kiryuu.org`
+- `mangasee123.com`
+- `manga4life.com`
+- `webtoons.com`
+- `mangatown.com` (works for some titles, not others)
 
-## Thank you to the awesome backers via Patreon
+The following websites still appear to be running, but support by this extension is currently broken:
 
-    -Nicole Marie T. Ma-amo
-    -Anne Marrie
-    -innesfree
-    -kelvin
-    
-<a href="https://www.patreon.com/allaliadil">
-<img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Became a patreon">
-</a>
+- `mangakomi.com` / `mangakomi.io`
+- `manhuaplus.com`
+- `manhuaus.com`
+- `readhaikyuu.com`
+- `readsnk.com` (Shingeki no Kyojin)
+- `readbleachmanga.com`
+- `readblackclover.com`
+- `dbsmanga.com` (Dragon Ball Super)
+- `readonepiece.com`
+- `readmha.com` (My Hero Academia)
+- `readjujutsukaisen.com`
+- `readchainsawman.com`
+- `demonslayermanga.com`
+- `readdrstone.com`
+- `readnaruto.com`
+- `tokyoghoulre.com`
+- `readfairytail.com`
+- `readkingdom.com`
+- `readkaguyasama.com`
+- `readsololeveling.org`
+- `readneverland.com`
+- `readvinlandsaga.com`
+- `read7deadlysins.com`
+- `readhxh.com` (Hunter X Hunter)
+- `sailmg.com` (MangaSail)
+- `mangasaki.com` (redirects to `sailmg.com`, which is similar, but not quite same site)
+- `kissaway.net` / `klmanga.com` (redirects to `klz9.com`)
 
+The following previously supported websites appear to be permanently offline:
+
+- `mangareader.net` (there's a `mangareader.to`, but that appears to be a different site)
+- `mangapanda.com` (there's a `mangapanda.io`, but that appears to be a different site)
+- `mangazone.cc`
+- `mangafort.com`
+- `1stkissmanga.com` / `1stkissmanga.io`
+- `zinmanga.com`
+- `365manga.com`
+- `toonily.net` (`toonily.com` is supported, but that appears to be a different site)
+- `mangatx.com` (`mangatx.to` is supported, which looks like it may be same site)
+- `aloalivn.com`
+- `manhuasworld.com`
+- `mangafox.online` (there's a `fanfox.net` that brands itself as Manga Fox, but that appears to be a different site)
+- `kissmanga.com`
+- `readnoblesse.com`
+- `readtowerofgod.com`
+- `rawdevart.com` (there's a `rawdevart.art`, but that appears to be a different site)
+- `mangatail.me` (used to redirect to `mangasaki.com`)
+- `readmanhwa.com`
+- `loveheaven.net`
+- `qiman6.com`
+- `qingman5.com`
+- `full-metal-alchemist.com`
+- `funmanga.com`
+- `mngdoom.com`
+- `mangainn.net`
+- `mangafast.net`
+- `lovehug.net`
 

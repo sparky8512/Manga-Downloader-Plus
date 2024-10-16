@@ -31,10 +31,13 @@ if(document.querySelector("span#azerty") === null){
         case "zinmanga.com":
         case "365manga.com":
         case "toonily.net":
+        case "toonily.com":
         case "mangatx.com":
+        case "mangatx.to":
         case "aloalivn.com":
         case "manhuaplus.com":
         case "mangaclash.com":
+        case "toonclash.com":
         case "manhuasworld.com":
             mangakissF();   // is the same as mangakiss.org
             break;
@@ -55,6 +58,7 @@ if(document.querySelector("span#azerty") === null){
         case "chapmanganelo.com":
         case "manganato.com":
         case "chapmanganato.to":
+        case "readmanganato.com":
             manganeloF();
             break;
         case "ww5.readhaikyuu.com":
@@ -101,10 +105,12 @@ if(document.querySelector("span#azerty") === null){
             readblackcloverF();
             break;
         case "ww3.readopm.com":
+        case "ww5.readopm.com":
         case "readberserk.com":
             readopmF();
             break;
         case "kiryuu.co":
+        case "kiryuu.org":
             kiryuuF();              // sektekomik.com is the same as kiryuu.co
             break;
         case "sektekomik.com":
