@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Manga Downloader+",
 	"short_name" : "Manga DL+",
-	"version": "4.0.1",
+	"version": "4.0.2",
 
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
@@ -209,5 +209,10 @@
 	"background": {
 		"scripts": ["background.js"],
 		"service_worker": "sworker.js"
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{7d093b4b-ad4c-4790-b0bf-3063fd4c8f67}"
+		}
 	}
 }

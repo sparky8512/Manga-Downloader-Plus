@@ -71,6 +71,7 @@ def open_package_file(suffix, tag, force):
 def emit_chrome_package(file, manifest):
     manifest = copy.deepcopy(manifest)
     del manifest["background"]["scripts"]
+    del manifest["browser_specific_settings"]
     include_files = []
     include_files.extend(manifest["icons"].values())
     include_files.extend(manifest["content_scripts"][0]["js"])
