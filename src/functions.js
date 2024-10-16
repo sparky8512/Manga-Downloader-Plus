@@ -115,6 +115,10 @@ async function embedImages(pdfButton,zipButton,type,half=false){
     let pdfDoc = await PDFDocument.create();
     // Create new zip file
     let zip = new JSZip();
+    // work around JSZip bug #369
+    let now = new Date();
+    now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
+    JSZip.defaults.date = now;
     // create a folder inside the zip file
     let folder = zip.folder(button.title.trim());
     let percentage = "";
@@ -177,7 +181,9 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         while (num.length < (size || 2)) {
             num = "0" + num;
         }
-        folder.file(num + imageType, imageBytes, {base64: true});
+        now = new Date();
+        now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
+        folder.file(num + imageType, imageBytes, {base64: true, date: now});
         // Embed the image bytes
         let image;
         try {
@@ -390,6 +396,10 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
 async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,referrerLink,progressBar,funQueue){
     // Create new zip file
     let zip = new JSZip();
+    // work around JSZip bug #369
+    let now = new Date();
+    now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
+    JSZip.defaults.date = now;
     // create a folder inside the zip file
     let folder = zip.folder(chapter.value.trim());
     let percentage;
@@ -454,7 +464,9 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         while (num.length < (size || 2)) {
             num = "0" + num;
         }
-        folder.file(num + imageType, imageBytes, {base64: true});
+        now = new Date();
+        now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
+        folder.file(num + imageType, imageBytes, {base64: true, date: now});
     }
     if(errorHappened){
         progressBar.currentImageNum += chapter.imgs.length - i;
