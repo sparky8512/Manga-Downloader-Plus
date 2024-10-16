@@ -76,7 +76,15 @@ async function fetchText(url, ref) {
 }
 async function fetchImage(url, ref) {
     if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
-        return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"}).then((res) => res.arrayBuffer());
+        return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"})
+            .then((res) => res.arrayBuffer()).then((buf) => {
+                // JSZip will fail if this instanceof check returns false, which
+                // will happen for window.ArrayBuffer objects on Firefox
+                if (buf instanceof ArrayBuffer) {
+                    return buf;
+                }
+                return structuredClone(buf, {tranfser: [buf]});
+            });
     }
     return browser.runtime.sendMessage({cmd: "fetchImage", url: url, referrer: ref}).then((res) => {
         if (res[0]) {
