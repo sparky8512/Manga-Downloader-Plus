@@ -141,10 +141,7 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         let imageBytes;
         try {
             imageBytes = await fetch(imgUrl, {
-                referrer: referrerLink,
-                headers: {
-                    'Content-Type': 'image/jpeg,image/png'
-                }
+                referrer: referrerLink
             }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
                 clearConsole();
                 alert("(Manga Downloader) Can't fetch image.\n"+imgUrl);
@@ -297,10 +294,7 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         let imageBytes;
         try {
             imageBytes = await fetch(imgUrl, {
-                referrer: referrerLink,
-                headers: {
-                    'Content-Type': 'image/jpeg,image/png'
-                }
+                referrer: referrerLink
             }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
                 clearConsole();
                 progressBar.failedChapters.push(chapter.value.trim());
@@ -418,10 +412,7 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         let imageBytes;
         try {
             imageBytes = await fetch(imgUrl, {
-                referrer: referrerLink,
-                headers: {
-                    'Content-Type': 'image/jpeg,image/png'
-                }
+                referrer: referrerLink
             }).then(handleErrors).then((res) => res.arrayBuffer()).catch(error => {
                 clearConsole();
                 progressBar.failedChapters.push(chapter.value.trim());
