@@ -10,14 +10,26 @@ function loveheavenF(){
     let zipButtons = [];
     // to store all chapters images for batch Download (store the buttons)
     let chaptersData = [];
+    let loops = 0;
     // check if viewing chapters list page
-    if(document.querySelector("div#tab-chapper table.table") !== null){
-        chapterList = document.querySelector("div#tab-chapper table.table");
-        rows = chapterList.querySelectorAll("tr");
-        // calling function
-        addNote();
-        addBatchDownload();
-        addDownloadButtons();
+    if(document.querySelector("div#tab-chapper div#list-chapter") !== null){
+        checkLoop();
+    }
+    function checkLoop() {
+        // Chapter list sometimes takes a while to load if there is a modal pop-up
+        if(document.querySelector("div#list-chapter table.table") !== null){
+            chapterList = document.querySelector("div#list-chapter table.table");
+            rows = chapterList.querySelectorAll("tr");
+            // calling function
+            addNote();
+            addBatchDownload();
+            addDownloadButtons();
+        }
+        else{
+            if(loops++ < 60){
+                setTimeout(checkLoop,1000);
+            }
+        }
     }
     // add a note for users
     function addNote(){
@@ -27,6 +39,15 @@ function loveheavenF(){
         note.style.fontSize = "x-large";
         note.style.color = "black";
         chapterDiv.parentElement.insertBefore(note,chapterDiv.previousElementSibling);
+    }
+    function getRandom(len){
+        const symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        const numSymbols = symbols.length;
+        let result = "";
+        for (let i=0; i < len; i++) {
+            result += symbols.charAt(Math.floor(Math.random() * numSymbols));
+        }
+        return result;
     }
     // add download button for each chapter
     function addDownloadButtons(){
@@ -49,6 +70,7 @@ function loveheavenF(){
             let newCell = document.createElement("td");
             newCell.appendChild(pdfButton);
             newCell.appendChild(zipButton);
+            newCell.style.width = "min-content";
             rows[i].appendChild(newCell);
             // storing download button for easy access
             pdfButtons.push(pdfButton);
@@ -75,33 +97,56 @@ function loveheavenF(){
                     // convert text to html DOM
                     let parser = new DOMParser();
                     let doc = parser.parseFromString(this.responseText, "text/html");
-                    let imgs = doc.querySelectorAll("div.chapter-content img.chapter-img");
-
-                    pdfButton.imgs = [];
-                    zipButton.imgs = [];
-
-                    for(let img of imgs){
-                        pdfButton.imgs.push(img.attributes["data-aload"].value.trim());
-                        zipButton.imgs.push(img.attributes["data-aload"].value.trim());
+                    let cid;
+                    try {
+                        cid = parseInt(doc.getElementById("chapter").value);
+                    } catch {
+                        pdfButton.textContent = "Not Found";
+                        zipButton.style.display = "none";
+                        return;
                     }
 
-                    // store the button with all the images for batch download
-                    chaptersData[id] = {
-                        title: pdfButton.title,
-                        images: pdfButton.imgs,
-                        referrerLink: links[id]
-                    };
-                    // check if all buttons are add
-                    let len = chaptersData.reduce((acc,cv)=>(cv)?acc+1:acc,0);
-                    waitNote.textContent = "wait, "+len+"/"+chapterCount+" Chapters.";
-                    if(len === chapterCount){
-                        addChaptersToList();
-                    }
+                    let rand = getRandom(30);
+                    let url = (new URL(links[id])).origin+"/"+rand+".iog?cid="+cid;
+                    fetch(url,{referrer:links[id]}).then((res) => {
+                        if(res.ok) {
+                            return res.text();
+                        }
+                        throw res.status+" "+res.statusText;
+                    }).then((html) => {
+                        let parser = new DOMParser();
+                        let doc = parser.parseFromString(html, "text/html");
+                        let imgs = doc.querySelectorAll("img.chapter-img");
 
-                    pdfButton.removeAttribute("disabled");
-                    zipButton.removeAttribute("disabled");
-                    pdfButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,1);});
-                    zipButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,2);});
+                        pdfButton.imgs = [];
+                        zipButton.imgs = [];
+
+                        for(let img of imgs){
+                            pdfButton.imgs.push(img.src);
+                            zipButton.imgs.push(img.src);
+                        }
+
+                        // store the button with all the images for batch download
+                        chaptersData[id] = {
+                            title: pdfButton.title,
+                            images: pdfButton.imgs,
+                            referrerLink: links[id]
+                        };
+                        // check if all buttons are add
+                        let len = chaptersData.reduce((acc,cv)=>(cv)?acc+1:acc,0);
+                        waitNote.textContent = "wait, "+len+"/"+chapterCount+" Chapters.";
+                        if(len === chapterCount){
+                            addChaptersToList();
+                        }
+
+                        pdfButton.removeAttribute("disabled");
+                        zipButton.removeAttribute("disabled");
+                        pdfButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,1);});
+                        zipButton.addEventListener("click", function(){embedImages(pdfButton,zipButton,2);});
+                    }).catch(error => {
+                        pdfButton.textContent = "Not Found";
+                        zipButton.style.display = "none";
+                    });
                 }
             };
             xhttp.onerror = function (){
@@ -212,7 +257,7 @@ function loveheavenF(){
             }
             option.textContent = title;
             option.imgs = chaptersData[i].images;
-            if(option.imgs === 0){
+            if(option.imgs.length === 0){
                 option.disabled = "true";
             }
             option.ref = chaptersData[i].referrerLink;
