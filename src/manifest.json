@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Manga Downloader",
 	"short_name" : "Manga Downloader",
-	"version": "3.11.1",
+	"version": "3.11.2",
 	
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
@@ -123,7 +123,8 @@
 		"*://*.gamindustri.us/*",
 		"*://*.sailmg.com/*",
 		"*://*.manhuaplus.com/*",
-		"*://*.mangakomicdn.com/*"
+		"*://*.mangakomicdn.com/*",
+		"*://zjcdn.mangafox.me/*"
 	],
 	"content_scripts": [ {
 		"matches": [
@@ -176,7 +177,8 @@
 			"*://toonclash.com/*",
 			"*://www.mangatown.com/*",
 			"*://manhuaplus.com/*",
-			"*://klz9.com/*"
+			"*://klz9.com/*",
+			"*://fanfox.net/*"
 		],
 		"js": [
 			"External/pdf-lib.js",
@@ -194,6 +196,7 @@
 			"Scripts/mangasail.js",
 			"Scripts/mangatown.js",
 			"Scripts/loveheaven.js",
+			"Scripts/fanfox.js",
 			"index.js"
 		],
 		"css": ["Styles/md-style.css"]

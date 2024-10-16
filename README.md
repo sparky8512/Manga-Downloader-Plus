@@ -58,6 +58,7 @@ As of 2024-Oct, the following websites have been confirmed to work:
 - `readtokyorevengers.net`
 - `sailmg.com` (MangaSail, `mangasaki.com` now also redirects here)
 - `klz9.com` (formerly `kissaway.net` and `klmanga.com`)
+- `fanfox.net` (Manga Fox)
 
 The following websites still appear to be running, but support by this extension is currently broken:
 

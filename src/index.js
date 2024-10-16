@@ -54,6 +54,9 @@ if(document.querySelector("span#azerty") === null){
         case "klz9.com":
             loveheavenF();
             break;
+        case "fanfox.net":
+            fanfoxF();
+            break;
         default:
             let domain = host.split(".").slice(-2).join(".");
             switch (domain) {
