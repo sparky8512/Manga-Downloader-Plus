@@ -27,7 +27,7 @@ As of 2024-Oct, the following websites have been confirmed to work:
 - `mangasee123.com`
 - `manga4life.com`
 - `webtoons.com`
-- `mangatown.com` (works for some titles, not others)
+- `mangatown.com`
 - `readhaikyuu.com`
 - `readsnk.com` (Shingeki no Kyojin)
 - `readbleachmanga.com`

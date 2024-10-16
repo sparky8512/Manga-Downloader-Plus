@@ -67,26 +67,47 @@ function mangatownF() {
                     // convert text to html DOM
                     let parser = new DOMParser();
                     let doc = parser.parseFromString(this.responseText, "text/html");
-                    // get number of pages as string then converting it to an integer
-                    let scripts = doc.querySelectorAll("script");
 
-                    let exist = false;
-                    let script;
-                    for(let scr of scripts){
-                        script = scr.textContent.trim();
-                        if(script.includes("total_pages")){
-                            exist = true;
-                            break;
+                    pdfButton.imgs = [];
+                    zipButton.imgs = [];
+                    let imgs = doc.querySelectorAll("div.read_img img.image");
+                    if(imgs.length > 0){
+                        pages[id] = null;
+
+                        for(let img of imgs){
+                            pdfButton.imgs.push(img.src);
+                            zipButton.imgs.push(img.src);
                         }
                     }
-                    if(!exist){
-                        return;
+                    else{
+                        // get number of pages as string then converting it to an integer
+                        let scripts = doc.querySelectorAll("script");
+
+                        let exist = false;
+                        let script;
+                        for(let scr of scripts){
+                            script = scr.textContent.trim();
+                            if(script.includes("total_pages")){
+                                exist = true;
+                                break;
+                            }
+                        }
+                        if(!exist){
+                            console.log("Couldn't find page count");
+                            return;
+                        }
+                        let str = script.slice(script.indexOf("total_pages"), script.length);
+                        str = str.slice(str.indexOf("=")+1, str.indexOf(";"));
+                        let pagesNum = parseInt(str.trim());
+                        // storing pages number
+                        pages[id] = pagesNum;
+
+                        // save off first image URL, since we already have it
+                        let img = doc.querySelector("div.read_img img#image");
+                        pdfButton.imgs[0] = img.src;
+                        zipButton.imgs[0] = img.src;
                     }
-                    let str = script.slice(script.indexOf("total_pages"), script.length);
-                    str = str.slice(str.indexOf("=")+1, str.indexOf(";"));
-                    let pagesNum = parseInt(str.trim());
-                    // storing pages number
-                    pages[id] = pagesNum;
+
                     // making button clickable and adding listener for click
                     pdfButton.removeAttribute("disabled");
                     zipButton.removeAttribute("disabled");
@@ -127,17 +148,20 @@ function mangatownF() {
             downloadFile(zipButtons[id].zip,button.title.trim(),"zip");
             return;
         }
+        pdfButtons[id].disabled = "true";
+        zipButtons[id].disabled = "true";
+        if(pages[id] === null) {
+            // already have images
+            button.textContent = "50%";
+            embedImages(pdfButtons[id],zipButtons[id],type,true);
+        }
         else{
-            pdfButtons[id].disabled = "true";
-            zipButtons[id].disabled = "true";
-            pdfButtons[id].imgs = [];
-            zipButtons[id].imgs = [];
             button.textContent = "0%";
             // to know when all links are found
-            pdfButtons[id].counter = 0;
-            // loop throw all chapter pages
-            let index = 0;
-            for(let i=1;i<=pages[id];i++){
+            pdfButtons[id].counter = 1;
+            // loop through chapter pages, starting with second page
+            let index = 1;
+            for(let i=2;i<=pages[id];i++){
                 let xhttp = new XMLHttpRequest();
                 xhttp.id = id;
                 xhttp.num = index;
@@ -171,7 +195,11 @@ function mangatownF() {
                     console.log("Failed to get "+links[id]+"/"+i+".html");
                 };
                 // i because webpages starts from /1
-                xhttp.open("GET", links[id]+"/"+i+".html");
+                let chapUrl = links[id];
+                if(!chapUrl.endsWith("/")){
+                    chapUrl += "/";
+                }
+                xhttp.open("GET", chapUrl+i+".html");
                 xhttp.send();
                 index++;
             }
