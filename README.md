@@ -28,10 +28,6 @@ As with Firefox, first get a copy of the repository. Then from the extensions me
 
 ---
 
-# IMPORTANT NOTE
-
-New websites will not be add for now, unless they are clones of an already supported one. The SOURCE CODE is available, you can add the websites you want.  
-
 # Supported Websites
 
 As of 2024-Oct, the following websites have been confirmed to work:
