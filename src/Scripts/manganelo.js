@@ -56,10 +56,19 @@ function manganeloF() {
             }
 
             let server;
-            if (buttonGroup == 0) {
-                server = "https://chapmanganato.to/content_server_s1";
+            let hostname = window.location.hostname;
+            if (hostname.endsWith("manganelo.com")) {
+                if (buttonGroup == 0) {
+                    server = "https://chapmanganelo.com/content_server_s1";
+                } else {
+                    server = "https://chapmanganelo.com/content_server_s2";
+                }
             } else {
-                server = "https://chapmanganato.to/content_server_s2";
+                if (buttonGroup == 0) {
+                    server = "https://chapmanganato.to/content_server_s1";
+                } else {
+                    server = "https://chapmanganato.to/content_server_s2";
+                }
             }
             return fetchText(server, chapterUrl).then((html) => {
                 let parser = new DOMParser();
