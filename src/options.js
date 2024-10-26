@@ -4,8 +4,10 @@ if (typeof browser == "undefined") {
 
 function updateActivePermissions() {
     browser.permissions.getAll().then((perms) => {
-        const matchOrigins = new Set(browser.runtime.getManifest().content_scripts[0].matches);
-        const origins = new Set(perms.origins).difference(matchOrigins);
+        const manifest = browser.runtime.getManifest();
+        let autoOrigins = new Set(manifest.content_scripts[0].matches);
+        autoOrigins = autoOrigins.union(new Set(manifest.host_permissions));
+        const origins = new Set(perms.origins).difference(autoOrigins);
 
         const tbody = document.getElementById("md-active-permissions");
         tbody.replaceChildren();
@@ -58,6 +60,9 @@ document.getElementById("md-permission-form").addEventListener("submit", (event)
         const origin = "https://"+ hostname + "/*";
         browser.permissions.request({origins: [origin]}).then((res) => {
             if (res) {
+                if (lastFailHost === hostname) {
+                    browser.storage.session.set({lastFailHost: null});
+                }
                 document.getElementById("md-hostname").value = "";
                 updateActivePermissions();
             }
@@ -82,6 +87,29 @@ function removePermission(event) {
 
     event.preventDefault();
 }
+
+let lastFailHost = null;
+
+function updateDefaultHostname() {
+    const hostElem = document.getElementById("md-hostname");
+    if (hostElem.value === "" && lastFailHost !== null) {
+        hostElem.value = lastFailHost;
+    }
+}
+
+browser.storage.session.onChanged.addListener((changes) => {
+    if ("lastFailHost" in changes) {
+        lastFailHost = changes.lastFailHost.newValue;
+        updateDefaultHostname();
+    }
+});
+
+browser.storage.session.get({lastFailHost: null}).then((res) => {
+    lastFailHost = res.lastFailHost;
+    updateDefaultHostname();
+}).catch((err) => {
+    console.log("Storage get err:"+err);
+});
 
 updateActivePermissions();
 window.addEventListener("focus", (event) => {

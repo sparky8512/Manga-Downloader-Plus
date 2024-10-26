@@ -1,3 +1,20 @@
+function handleFetchError(url, err, sendResponse) {
+    const origin = new URL(url).origin + "/";
+    browser.permissions.contains({origins: [origin]}).then((res) => {
+        if (res) {
+            // not a permission problem
+            sendResponse([false, "PERMISSION_OK"]);
+        } else {
+            sendResponse([false, "PERMISSION_FAILURE"]);
+            browser.storage.session.set({lastFailHost: new URL(url).hostname});
+        }
+    }).catch((pcerr) => {
+        console.log("permission check error: "+pcerr);
+        // unexpected, so just send original error
+        sendResponse([false, err]);
+    });
+}
+
 function fetchCmd(url, ref, isImage, sendResponse) {
     let requestOpts = {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"};
     fetch(url, requestOpts).then((res) => {
@@ -11,8 +28,8 @@ function fetchCmd(url, ref, isImage, sendResponse) {
                 sendResponse([false, err]);
             });
         }
-    }, (err) => {
-        sendResponse([false, err]);
+    }).catch((err) => {
+        handleFetchError(url, err, sendResponse);
     });
 
     return true;
