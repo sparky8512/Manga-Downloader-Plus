@@ -91,3 +91,48 @@
     margin-left: 20px;
     margin-top: 15px;
 }
+
+/* styles for options page */
+input#md-hostname {
+    width: 50ch;
+}
+
+input#md-hostname:invalid {
+    color: red;
+}
+
+table.md-table {
+    border-collapse: collapse;
+    border: 2px solid rgb(140 140 140);
+}
+
+table.md-table caption {
+    padding: 10px;
+    font-weight: bold;
+}
+
+table.md-table td {
+    border-top: 1px solid rgb(160 160 160);
+    border-bottom: 1px solid rgb(160 160 160);
+    padding: 4px 6px;
+    height: 16px;
+}
+
+.md-col-hostname {
+    width: 72ch;
+}
+.md-col-remove-button {
+    width: 12px;
+}
+
+.md-remove-button {
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: -6px;
+    margin-bottom: -3px;
+    margin-right: -3px;
+    margin-left: -3px;
+    padding: 0px;
+    line-height: 15px;
+    vertical-align: middle;
+}

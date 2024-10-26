@@ -11,9 +11,16 @@
 		"96": "icons/md-96.png",
 		"128": "icons/md-128.png"
 	},
+	"action": {
+		"default_title": "Manga Downloader+"
+	},
+	"options_ui": {
+		"page": "options.html",
+		"open_in_tab": true
+	},
 	"permissions" : [
 		"declarativeNetRequestWithHostAccess"
-        ],
+	],
 	"host_permissions" : [
 		"*://*.imggur.net/*",
 		"*://*.imgur.com/*",
@@ -129,6 +136,9 @@
 		"*://*.mangakomicdn.com/*",
 		"*://*.mangaclash.com/*",
 		"*://zjcdn.mangafox.me/*"
+	],
+	"optional_host_permissions" : [
+		"https://*/*"
 	],
 	"content_scripts": [ {
 		"matches": [

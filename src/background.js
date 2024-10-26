@@ -29,3 +29,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("unhandled cmd: "+request["cmd"]);
     return false;
 });
+
+browser.action.onClicked.addListener(() => {
+    browser.runtime.openOptionsPage();
+});

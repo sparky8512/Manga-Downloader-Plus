@@ -73,3 +73,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("unhandled cmd: "+request["cmd"]);
     return false;
 });
+
+chrome.action.onClicked.addListener(() => {
+    chrome.runtime.openOptionsPage();
+});
