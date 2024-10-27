@@ -93,6 +93,15 @@
 }
 
 /* styles for options page */
+#md-options {
+    max-width: 6in;
+}
+
+#md-options:not(.md-chrome) .md-display-chrome,
+#md-options:not(.md-firefox) .md-display-firefox {
+    display: none;
+}
+
 input#md-hostname {
     width: 50ch;
 }

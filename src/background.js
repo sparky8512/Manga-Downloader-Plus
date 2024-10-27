@@ -42,6 +42,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request["cmd"] == "fetchImage") {
         return fetchCmd(request["url"], request["referrer"], true, sendResponse);
     }
+    if (request["cmd"] == "identify") {
+        sendResponse("firefox");
+        return true;
+    }
 
     console.log("unhandled cmd: "+request["cmd"]);
     return false;

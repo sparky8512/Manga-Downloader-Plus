@@ -5,7 +5,7 @@
     <title>Manga Downloader+ Options</title>
     <link rel="stylesheet" href="Styles/md-style.css">
 </head>
-<body style="max-width: 6in;">
+<body id="md-options">
     <p>If images fail to download due to a permissions error, you can add the
     permission by entering the hostname from the failed URL and pressing the
     <code>Request</code> button. Your browser will then ask you to approve the
@@ -28,16 +28,23 @@
         <caption>Added Host Permissions</caption>
         <tbody id="md-active-permissions" />
     </table>
-    <script src="options.js"></script>
 
     <p><b>NOTE</b>: If the download request was redirected to a different host
     by the website server, both the original hostname and the redirect
     destination hostname may need permission added. The failure notice will
     only list the original hostname and finding the redirect destination can
-    be tricky. One way to find the redirect hostname is to open the Network
-    tab of the Web Developer tools for this page and repeat the download
-    attempt, but you should only do that if you understand what you're
-    doing.</p>
+    be tricky.
+    <span class="md-display-chrome">On Chrome (and similar) browsers, one way
+    to find the redirect hostname is to open the Network tab of the Developer
+    tools for this page and repeat the download attempt, but you should only
+    do that if you understand what you're doing.</span>
+    <span class="md-display-firefox">On Firefox browsers, this usually
+    requires bringing up
+    <a href="https://extensionworkshop.com/documentation/develop/debugging/#developer-tools-toolbox">the
+    Developer Tools for the extension</a>, opening the Network tab, and then
+    repeating the download attempt, but you should only do that if you
+    understand what you're doing.</span>
+    </p>
 
     <p>Do not include the scheme, path, or port number with the hostname. The
     hostname may optionally be prefixed with "<code>*.</code>" to also match
@@ -47,5 +54,7 @@
     hostnames <code>www.example.com</code>, <code>*.www.example.com</code>,
     <code>*.example.com</code>, and <code>*</code> will all match, but
     <code>example.com</code> will not.</p>
+
+    <script src="options.js"></script>
 </body>
 </html>

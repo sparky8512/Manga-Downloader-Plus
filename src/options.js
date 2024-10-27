@@ -108,10 +108,18 @@ browser.storage.session.get({lastFailHost: null}).then((res) => {
     lastFailHost = res.lastFailHost;
     updateDefaultHostname();
 }).catch((err) => {
-    console.log("Storage get err:"+err);
+    console.log("Storage get err: "+err);
 });
 
 updateActivePermissions();
 window.addEventListener("focus", (event) => {
     updateActivePermissions();
+});
+
+browser.runtime.sendMessage({cmd: "identify"}).then((res) => {
+    if (res === "chrome" || res === "firefox") {
+         document.getElementById("md-options").classList.add("md-"+res);
+    }
+}).catch((err) => {
+    console.log("Browser id err: "+err);
 });
