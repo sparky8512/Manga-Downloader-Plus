@@ -46,6 +46,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse("firefox");
         return true;
     }
+    if (request["cmd"] == "openOptions") {
+        return browser.runtime.openOptionsPage();
+    }
 
     console.log("unhandled cmd: "+request["cmd"]);
     return false;

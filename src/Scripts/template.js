@@ -16,12 +16,14 @@ function templateF(funcs, groupNames=null) {
                 addNote();
                 addBatchDownload();
                 addDownloadButtons();
+                addErrorDialog();
             }
         });
     } else {
         addNote();
         addBatchDownload();
         addDownloadButtons();
+        addErrorDialog();
     }
 
     // add a note for users
@@ -141,10 +143,10 @@ function templateF(funcs, groupNames=null) {
     function addBatchDownload(){
         // add the floatDiv to document body
         let floatDiv = document.createElement("div");
-        floatDiv.id = "md-floatDiv";
-        floatDiv.classList.add("md-float-modal");
+        floatDiv.id = "md-floatDiv-download";
+        floatDiv.classList.add("md-float-modal", "md-float-modal-download");
         let floatDivContent = document.createElement("div");
-        floatDivContent.classList.add("md-float-modal-content");
+        floatDivContent.classList.add("md-float-modal-content", "md-float-modal-download-content");
         let floatCloseButton = document.createElement("span");
         floatCloseButton.classList.add("md-float-close");
         floatCloseButton.innerHTML = "&times;";
@@ -318,9 +320,43 @@ function templateF(funcs, groupNames=null) {
         
         let batchDownloadButton = document.querySelector("button#md-batch-download-button");
         batchDownloadButton.onclick = function(){
-            let floatDiv = document.querySelector("div#md-floatDiv");
+            let floatDiv = document.querySelector("div#md-floatDiv-download");
             floatDiv.style.display = "block";
         };
         batchDownloadButton.removeAttribute("disabled");
+    }
+
+    // add permissions error dialog
+    function addErrorDialog() {
+        let floatDiv = document.createElement("div");
+        floatDiv.id = "md-floatDiv-error";
+        floatDiv.classList.add("md-float-modal", "md-float-modal-error");
+        document.body.appendChild(floatDiv);
+
+        let floatDivContent = document.createElement("div");
+        floatDivContent.classList.add("md-float-modal-content", "md-float-modal-error-content");
+        floatDiv.appendChild(floatDivContent);
+
+        let floatCloseButton = document.createElement("span");
+        floatCloseButton.classList.add("md-float-close");
+        floatCloseButton.innerHTML = "&times;";
+        floatDivContent.appendChild(floatCloseButton);
+
+        let errorMessage = document.createElement("p");
+        errorMessage.id = "md-error-message";
+        floatDivContent.appendChild(errorMessage);
+
+        let buttonHolder = document.createElement("span");
+        let optionsButton = document.createElement("button");
+        optionsButton.id = "md-options-button";
+        optionsButton.classList.add("md-download-button", "md-error-button");
+        optionsButton.textContent = "Open Options Page";
+        buttonHolder.appendChild(optionsButton);
+        let retryButton = document.createElement("button");
+        retryButton.id = "md-retry-button";
+        retryButton.classList.add("md-download-button", "md-error-button");
+        retryButton.textContent = "Retry Download";
+        buttonHolder.appendChild(retryButton);
+        floatDivContent.appendChild(buttonHolder);
     }
 }

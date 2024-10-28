@@ -90,6 +90,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse("chrome");
         return true;
     }
+    if (request["cmd"] == "openOptions") {
+        return chrome.runtime.openOptionsPage();
+    }
 
     console.log("unhandled cmd: "+request["cmd"]);
     return false;

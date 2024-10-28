@@ -18,6 +18,10 @@
     color: #666666;
 }
 
+.md-error-button {
+    width: 50%;
+}
+
 .md-mangakakalot-highlight:hover {
     background: rgba(255, 115, 0, 0.09);
 }
@@ -29,7 +33,6 @@
 .md-float-modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 999; /* Sit on top */
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -38,13 +41,29 @@
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+.md-float-modal-download {
+    z-index: 999; /* Sit on top */
+}
+
+.md-float-modal-error {
+    z-index: 1000; /* Sit way on top */
+}
+
 /* Modal Content/Box */
 .md-float-modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
+}
+
+.md-float-modal-download-content {
+    margin: 15% auto; /* 15% from the top and centered */
     width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.md-float-modal-error-content {
+    margin: 50% auto;
+    width: 40%;
 }
 
 /* The Close Button */
@@ -53,6 +72,8 @@
     float: right;
     font-size: 28px;
     font-weight: bold;
+    line-height: 15px;
+    margin-bottom: 12px;
 }
 
 .md-float-close:hover,
@@ -83,6 +104,11 @@
 #md-float-chapter-list {
     width: 100%;
     margin-top: 10px;
+}
+
+#md-error-message {
+    line-height: 1.15em;
+    padding-bottom: 1em;
 }
 
 .md-qiman6-chapter {

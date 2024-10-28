@@ -62,17 +62,72 @@ function wrapFunction(fn, context, params) {
         fn.apply(context, params);
     };
 }
+async function handleFetchError(err, hostname) {
+    const errorMessage = document.getElementById("md-error-message");
+    if (errorMessage === null) {
+        return false;
+    }
+
+    if (err === "PERMISSION_FAILURE") {
+        errorMessage.textContent = "There was an error downloading a file due to " +
+            "missing permission to access the website \"" + hostname + "\". Permission " +
+            "for that can be added manually in the Manga Downloader+ options page.";
+    } else if (err === "PERMISSION_OK") {
+        errorMessage.textContent = "There was an error downloading a file. If the " +
+            "download request was a redirected, this may be due to missing permission " +
+            "to access the redirect target website. Permission for that can be added " +
+            "manually in the Manga Downloader+ options page; however, the redirect " +
+            "target cannot be determeined automatically.";
+    } else {
+        return false;
+    }
+
+    return new Promise((resolve, reject) => {
+        const errorDialog = document.getElementById("md-floatDiv-error");
+        errorDialog.style.display = "block";
+        const optionsButton = document.getElementById("md-options-button");
+        const retryButton = document.getElementById("md-retry-button");
+        const closeButton = errorDialog.querySelector("span.md-float-close");
+
+        function handleOptions(event) {
+            browser.runtime.sendMessage({cmd: "openOptions"});
+        }
+
+        function handleRetry(event) {
+            done(true);
+        }
+
+        function handleClose(event) {
+            done(false);
+        }
+
+        function done(result) {
+            optionsButton.removeEventListener("click", handleOptions);
+            retryButton.removeEventListener("click", handleRetry);
+            closeButton.removeEventListener("click", handleClose);
+            errorDialog.style.display = "none";
+            resolve(result);
+        }
+
+        optionsButton.addEventListener("click", handleOptions);
+        retryButton.addEventListener("click", handleRetry);
+        closeButton.addEventListener("click", handleClose);
+    });
+}
 // Run a fetch() through the background task if cross-origin
 async function fetchText(url, ref) {
     if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
         return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"}).then((res) => res.text());
     }
-    return browser.runtime.sendMessage({cmd: "fetchText", url: url, referrer: ref}).then((res) => {
-        if (res[0]) {
-            return res[1];
-        }
-        throw res[1];
-    });
+    const res = await browser.runtime.sendMessage({cmd: "fetchText", url: url, referrer: ref});
+    if (res[0]) {
+        return res[1];
+    }
+    const retry = await handleFetchError(res[1], new URL(url).hostname);
+    if (retry) {
+        return fetchText(url, ref);
+    }
+    throw res[1];
 }
 async function fetchImage(url, ref) {
     if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
@@ -86,12 +141,15 @@ async function fetchImage(url, ref) {
                 return structuredClone(buf, {tranfser: [buf]});
             });
     }
-    return browser.runtime.sendMessage({cmd: "fetchImage", url: url, referrer: ref}).then((res) => {
-        if (res[0]) {
-            return (new Uint8Array(res[1])).buffer;
-        }
-        throw res[1];
-    });
+    const res = await browser.runtime.sendMessage({cmd: "fetchImage", url: url, referrer: ref});
+    if (res[0]) {
+        return (new Uint8Array(res[1])).buffer;
+    }
+    const retry = await handleFetchError(res[1], new URL(url).hostname);
+    if (retry) {
+        return fetchImage(url, ref);
+    }
+    throw res[1];
 }
 // make pdf/zip from images stored in a button
 async function embedImages(pdfButton,zipButton,type,half=false){
