@@ -135,7 +135,7 @@ def emit_firefox_package(file, manifest):
 def emit_firefox_update_manifest(file, manifest):
     tag = manifest["version"]
     extension_id = manifest["browser_specific_settings"]["gecko"]["id"]
-    update_url = "https://github.com/sparky8512/Manga-Downloader-Plus/releases/download/{}/Manga-Downloader-{}-Firefox.xpi".format(tag, tag)
+    update_url = "https://github.com/sparky8512/Manga-Downloader-Plus/releases/download/{}/Manga-Downloader-Firefox.xpi".format(tag, tag)
     update_manifest = {
         "addons": {
             extension_id: {
