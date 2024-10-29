@@ -1,5 +1,6 @@
 import argparse
 import copy
+import hashlib
 import json
 import logging
 import os
@@ -8,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+import urllib.request
 import zipfile
 
 
@@ -15,6 +17,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Create browser-specific extension packages")
     parser.add_argument("--chrome", action=argparse.BooleanOptionalAction, default=True, help="Emit extension package for Chrome")
     parser.add_argument("--firefox", action=argparse.BooleanOptionalAction, default=True, help="Emit extension package for Firefox")
+    parser.add_argument("--firefox-update", action=argparse.BooleanOptionalAction, default=False, help="Emit extension update manifest for Firefox")
     parser.add_argument("-f", "--force", action="store_true", help="Overwrite existing output files")
     parser.add_argument("-t", "--tag", help="Use specific version number for output filename instead of querying git tag")
 
@@ -57,15 +60,24 @@ def read_manifest(srcdir):
         manifest_in.close()
 
 
-def open_package_file(suffix, tag, force):
-    filename = "Manga-Downloader-{}-{}.zip".format(tag, suffix)
+def open_file(filename, force, binary):
     try:
-        return open(filename, "wb" if force else "xb")
+        return open(filename, ("wb" if force else "xb") if binary else ("w" if force else "x"))
     except FileExistsError:
         logging.error(filename+" already exists. Use --force to overwrite it.")
     except OSError as e:
         logging.error("Failed to open "+filename+": "+str(e))
     return None
+
+
+def open_package_file(suffix, tag, force):
+    filename = "Manga-Downloader-{}-{}.zip".format(tag, suffix)
+    return open_file(filename, force, True)
+
+
+def open_update_file(prefix, tag, force):
+    filename = "{}-{}.json".format(prefix, tag)
+    return open_file(filename, force, False)
 
 
 def emit_chrome_package(file, manifest):
@@ -104,6 +116,38 @@ def emit_firefox_package(file, manifest):
             zfile.write(ifile)
 
 
+def emit_firefox_update_manifest(file, manifest):
+    tag = manifest["version"]
+    extension_id = manifest["browser_specific_settings"]["gecko"]["id"]
+    update_url = "https://github.com/sparky8512/Manga-Downloader-Plus/releases/download/{}/Manga-Downloader-{}-Firefox.xpi".format(tag, tag)
+    update_manifest = {
+        "addons": {
+            extension_id: {
+                "updates": [
+                    {
+                        "version": tag,
+                        "update_link": update_url
+                    }
+                ]
+            }
+        }
+    };
+
+    try:
+        file_hash = hashlib.sha256()
+        with urllib.request.urlopen(update_url) as response:
+            while True:
+                data = response.read(64*1024)
+                if not data:
+                    break
+                file_hash.update(data)
+        update_manifest["addons"][extension_id]["updates"][0]["update_hash"] = "sha256:{}".format(file_hash.hexdigest())
+    except urllib.error.HTTPError:
+        pass
+
+    json.dump(update_manifest, file, indent=4)
+
+
 def main():
     opts = parse_args()
     srcdir = os.path.join(os.path.dirname(__file__), "..", "src")
@@ -115,6 +159,8 @@ def main():
         chrome_file = open_package_file("Chrome", opts.tag, opts.force)
     if opts.firefox:
         firefox_file = open_package_file("Firefox", opts.tag, opts.force)
+    if opts.firefox_update:
+        firefox_update_file = open_update_file("firefox_update", opts.tag, opts.force)
     os.chdir(srcdir)
     if opts.chrome and chrome_file is not None:
         try:
@@ -126,6 +172,8 @@ def main():
             emit_firefox_package(firefox_file, manifest_data)
         finally:
             firefox_file.close()
+    if opts.firefox_update and firefox_update_file is not None:
+        emit_firefox_update_manifest(firefox_update_file, manifest_data)
 
     sys.exit(0)
 
