@@ -80,12 +80,26 @@ def open_update_file(prefix, tag, force):
     return open_file(filename, force, False)
 
 
+# not at all robust, but will work for the expected html files
+def find_script_tags(html_filename):
+    js_filenames = []
+    with open(html_filename, "r") as file:
+        script_re = re.compile(r'<script\W+src="([^"]*)"')
+        for line in file:
+            parts = script_re.search(line)
+            if parts is not None:
+                js_filenames.append(parts.group(1))
+    return js_filenames
+
+
 def emit_chrome_package(file, manifest):
     manifest = copy.deepcopy(manifest)
     del manifest["background"]["scripts"]
     del manifest["browser_specific_settings"]
     include_files = []
     include_files.extend(manifest["icons"].values())
+    include_files.append(manifest["options_ui"]["page"])
+    include_files.extend(find_script_tags(manifest["options_ui"]["page"]))
     include_files.extend(manifest["content_scripts"][0]["js"])
     include_files.extend(manifest["content_scripts"][0]["css"])
     include_files.append(manifest["background"]["service_worker"])
@@ -105,6 +119,8 @@ def emit_firefox_package(file, manifest):
         del manifest["permissions"]
     include_files = []
     include_files.extend(manifest["icons"].values())
+    include_files.append(manifest["options_ui"]["page"])
+    include_files.extend(find_script_tags(manifest["options_ui"]["page"]))
     include_files.extend(manifest["content_scripts"][0]["js"])
     include_files.extend(manifest["content_scripts"][0]["css"])
     include_files.extend(manifest["background"]["scripts"])
