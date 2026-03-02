@@ -34,7 +34,11 @@ function readopmF() {
 
             let chapImgs = [];
             for(let img of imgs){
-                chapImgs.push(img.src);
+                if ("dataset" in img && "src" in img.dataset) {
+                    chapImgs.push(img.dataset.src);
+                } else {
+                    chapImgs.push(img.src);
+                }
             }
 
             return chapImgs;

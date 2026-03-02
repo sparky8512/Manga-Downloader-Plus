@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Manga Downloader+",
 	"short_name" : "Manga DL+",
-	"version": "4.0.4",
+	"version": "4.0.5.999",
 
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
@@ -23,8 +23,7 @@
 		"declarativeNetRequestWithHostAccess"
 	],
 	"host_permissions" : [
-		"https://*.chapmanganato.to/*",
-		"https://*.chapmanganelo.com/*",
+		"https://*.2xstorage.com/*",
 		"https://*.imgur.com/*",
 		"https://*.imageshack.com/*",
 		"https://*.klimv1.xyz/*",
@@ -33,7 +32,6 @@
 		"https://*.mangaclash.com/*",
 		"https://*.mangafox.me/*",
 		"https://*.mangahere.org/*",
-		"https://*.mangakomicdn.com/*",
 		"https://*.manhuaplus.com/*",
 		"https://*.manhuaus.com/*",
 		"https://*.mkklcdnv6temp.com/*",
@@ -45,7 +43,8 @@
 		"https://*.pstatic.net/*",
 		"https://*.sailmg.com/*",
 		"https://*.toonily.com/*",
-		"https://*.uqni.net/*"
+		"https://*.uqni.net/*",
+		"https://*.waitst.com/*"
 	],
 	"optional_host_permissions" : [
 		"https://*/*"
@@ -53,12 +52,8 @@
 	"content_scripts": [ {
 		"matches": [
 			"*://mangakiss.org/*",
-			"*://mangakomi.io/*",
-			"*://mangakakalot.com/*",
-			"*://*.manganelo.com/*",
-			"*://chapmanganelo.com/*",
-			"*://manganato.com/*",
-			"*://chapmanganato.to/*",
+			"*://*.mangakakalot.gg/*",
+			"*://*.manganato.gg/*",
 			"*://*.readnaruto.com/*",
 			"*://*.tokyoghoulre.com/*",
 			"*://*.readhaikyuu.com/*",
@@ -87,17 +82,13 @@
 			"*://*.bluelockread.com/*",
 			"*://*.readjojos.com/*",
 			"*://*.readsakadays.com/*",
-			"*://*.readundead.com/*",
 			"*://*.readtokyorevengers.net/*",
+			"*://*.mangabolt.com/*",
 			"*://kiryuu.org/*",
-			"*://mangadex.org/*",
-			"*://mangasee123.com/*",
 			"*://www.webtoons.com/*",
-			"*://manga4life.com/*",
 			"*://www.sailmg.com/*",
 			"*://toonily.com/*",
 			"*://manhuaus.com/*",
-			"*://mangatx.to/*",
 			"*://toonclash.com/*",
 			"*://www.mangatown.com/*",
 			"*://manhuaplus.com/*",
@@ -111,12 +102,9 @@
 			"Scripts/template.js",
 			"Scripts/mangakiss.js",
 			"Scripts/mangakakalot.js",
-			"Scripts/manganelo.js",
 			"Scripts/readopm.js",
 			"Scripts/readblackclover.js",
 			"Scripts/kiryuu.js",
-			"Scripts/mangadex.js",
-			"Scripts/mangasee123.js",
 			"Scripts/webtoons.js",
 			"Scripts/mangasail.js",
 			"Scripts/mangatown.js",

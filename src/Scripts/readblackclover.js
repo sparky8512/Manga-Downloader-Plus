@@ -46,11 +46,20 @@ function readblackcloverF() {
             // convert text to html DOM
             let parser = new DOMParser();
             let doc = parser.parseFromString(text, "text/html");
-            let imgs = doc.querySelectorAll("div.js-pages-container img.js-page");
+            let imgs = doc.querySelectorAll("div.js-pages-container img.js-page.lazy-load");
 
             let chapImgs = [];
             for(let img of imgs){
-                chapImgs.push(img.src);
+                chapImgs.push(img.dataset.src);
+            }
+
+            // fallback, in case some pages still in old format
+            if (!chapImgs) {
+                imgs = doc.querySelectorAll("div.js-pages-container img.js-page");
+
+                for(let img of imgs){
+                    chapImgs.push(img.src);
+                }
             }
 
             return chapImgs;

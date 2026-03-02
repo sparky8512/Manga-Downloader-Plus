@@ -15,32 +15,18 @@ if(document.querySelector("span#azerty") === null){
 
     switch (host) {
         case "mangakiss.org":
-        case "mangakomi.io":
         case "toonily.com":
-        case "mangatx.to":
         case "manhuaplus.com":
         case "toonclash.com":
         case "manhuaus.com":
             mangakissF();
             break;
-        case "mangakakalot.com":
+        case "www.mangakakalot.gg":
+        case "www.manganato.gg":
             mangakakalotF();
-            break;
-        case "m.manganelo.com":
-        case "chapmanganelo.com":
-        case "manganato.com":
-        case "chapmanganato.to":
-            manganeloF();
             break;
         case "kiryuu.org":
             kiryuuF();
-            break;
-        case "mangadex.org":
-            mangadexF();
-            break;
-        case "mangasee123.com":
-        case "manga4life.com":
-            mangasee123F();
             break;
         case "www.webtoons.com":
             webtoonsF();
@@ -86,8 +72,8 @@ if(document.querySelector("span#azerty") === null){
                 case "bluelockread.com":
                 case "readjojos.com":
                 case "readsakadays.com":
-                case "readundead.com":
                 case "readtokyorevengers.net":
+                case "mangabolt.com":
                     readblackcloverF();
                     break;
                 case "readopm.com":

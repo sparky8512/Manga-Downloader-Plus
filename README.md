@@ -26,56 +26,45 @@ Firefox does not expose profiles in its UI the way that Chrome and Edge do. You 
 
 # Supported Websites
 
-As of 2024-Oct, the following websites have been confirmed to work:
+As of 2026-Mar, the following websites have been confirmed to work at least partially:
 
 - `mangakiss.org`
-- `mangakomi.io` (`mangakomi.com` redirects here)
 - `toonily.com`
-- `mangatx.to`
 - `manhuaplus.com`
 - `toonclash.com` (Manga Clash)
 - `manhuaus.com`
-- `mangakakalot.com`
-- `manganelo.com`
-- `manganato.com`
 - `readopm.com` (One Punch Man)
 - `readberserk.com`
-- `kiryuu.org`
-- `mangasee123.com`
-- `manga4life.com`
 - `webtoons.com`
 - `mangatown.com`
 - `readhaikyuu.com`
 - `readsnk.com` (Shingeki no Kyojin)
-- `readbleachmanga.com`
 - `readblackclover.com`
-- `dbsmanga.com` (Dragon Ball Super)
 - `readonepiece.com`
 - `readmha.com` (My Hero Academia)
 - `readjujutsukaisen.com`
 - `readchainsawman.com`
 - `demonslayermanga.com`
-- `readdrstone.com`
 - `readnaruto.com`
 - `tokyoghoulre.com`
 - `readfairytail.com`
 - `readkingdom.com`
-- `readkaguyasama.com`
 - `readsololeveling.org`
-- `readneverland.com`
-- `readvinlandsaga.com`
 - `read7deadlysins.com`
-- `readhxh.com` (Hunter X Hunter)
 - `readkagurabachimanga.com`
 - `readichithewitch.com`
 - `bluelockread.com`
 - `readjojos.com`
 - `readsakadays.com`
-- `readundead.com` (Undead Unluck)
-- `readtokyorevengers.net`
 - `sailmg.com` (MangaSail, `mangasaki.com` now also redirects here)
-- `klz9.com` (formerly `kissaway.net` and `klmanga.com`)
 - `fanfox.net` (Manga Fox)
+- `mangabolt.com` (some of the older `readX.com` sites now redirect here)
+
+The following were previously supported but are currently broken:
+- `kiryuu.org` (also `kiryuu.id`; new site format has its own download button, so unlikely to fix)
+- `klz9.com` (formerly `kissaway.net` and `klmanga.com`; format has changed)
+- `mangakakalot.gg` (was `mangakakalot.com`; cookies issue on image download)
+- `manganato.gg` (cookies issue on image download)
 
 The following previously supported websites appear to be permanently offline:
 
@@ -87,7 +76,6 @@ The following previously supported websites appear to be permanently offline:
 - `zinmanga.com`
 - `365manga.com`
 - `toonily.net` (`toonily.com` is supported, but that appears to be a different site)
-- `mangatx.com` (`mangatx.to` is supported, which looks like it may be same site)
 - `aloalivn.com`
 - `manhuasworld.com`
 - `mangafox.online` (there's a `fanfox.net` that brands itself as Manga Fox, but that appears to be a different site)
@@ -106,4 +94,11 @@ The following previously supported websites appear to be permanently offline:
 - `mangainn.net`
 - `mangafast.net`
 - `lovehug.net`
+- `mangakomi.io` (and `mangakomi.com`)
+- `mangatx.to` (and `mangatx.com`; there's a `mangatx.cc`, but it uses a different format)
+- `manganelo.com`
+- `manganato.com` (`manganato.gg` looks similar, but appears to be a different site)
+- `mangasee123.com` (closed in favor of new site `weebcentral.com`)
+- `manga4life.com` (closed in favor of new site `weebcentral.com`)
+- `readundead.com` (Undead Unluck)
 

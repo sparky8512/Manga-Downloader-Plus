@@ -221,7 +221,8 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         let imageBytes;
         try {
             imageBytes = await fetchImage(imgUrl, referrerLink);
-        } catch {
+        } catch (e) {
+            console.log("Fetch image error: "+e);
             alert("(Manga Downloader) Can't fetch image.\n"+imgUrl);
             downloadFinished(pdfButton,zipButton);
             return;
