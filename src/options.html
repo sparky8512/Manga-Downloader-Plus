@@ -6,6 +6,24 @@
     <link rel="stylesheet" href="Styles/md-style.css">
 </head>
 <body id="md-options">
+    <h2>Per-host HTTP Request Rate Limit</h2>
+
+    <p>To lessen the impact on download servers, impose a minimum time between
+    starting subsequent HTTP requests.</p>
+    <table>
+        <tr>
+            <td><label for="md-interval-fixed">Fixed part of interval (in seconds):</label></td>
+            <td><input type="number" id="md-interval-fixed" min="0" max="100" step="0.01"></td>
+            <td rowspan=2><button id="md-interval-reset">Reset to<br>defaults</button></td>
+        </tr>
+        <tr>
+            <td><label for="md-interval-random">Random part of interval (max, in seconds):</label></td>
+            <td><input type="number" id="md-interval-random" min="0" max="100" step="0.01"></td>
+        </tr>
+    </table>
+
+    <h2>Host Permissions</h2>
+
     <p>If images fail to download due to a permissions error, you can add the
     permission by entering the hostname from the failed URL and pressing the
     <code>Request</code> button. Your browser will then ask you to approve the
@@ -55,6 +73,7 @@
     <code>*.example.com</code>, and <code>*</code> will all match, but
     <code>example.com</code> will not.</p>
 
+    <script src="option_store.js"></script>
     <script src="options.js"></script>
 </body>
 </html>

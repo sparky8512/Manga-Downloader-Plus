@@ -4,6 +4,8 @@ if (typeof browser == "undefined") {
     globalThis.browser = chrome;
 }
 
+let rateLimitHostTimes = { };
+
 // check image arrayBuffer if it's a Jpeg
 function isJPEG(arrayBuffer){
     let data = new Uint8Array(arrayBuffer);
@@ -115,7 +117,7 @@ async function handleFetchError(err, hostname) {
     });
 }
 // Run a fetch() through the background task if cross-origin
-async function fetchText(url, ref) {
+async function fetchTextNoRateLimit(url, ref) {
     if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
         return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"}).then((res) => res.text());
     }
@@ -129,7 +131,7 @@ async function fetchText(url, ref) {
     }
     throw res[1];
 }
-async function fetchImage(url, ref) {
+async function fetchImageNoRateLimit(url, ref) {
     if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
         return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"})
             .then((res) => res.arrayBuffer()).then((buf) => {
@@ -150,6 +152,32 @@ async function fetchImage(url, ref) {
         return fetchImage(url, ref);
     }
     throw res[1];
+}
+// This is a very basic rate limit that just imposes a minimum time delay
+// between subsequent requests to the same host.
+async function rateLimitWrapper(func, url, ref) {
+    let hostname = new URL(url).hostname;
+    let now = performance.now(); // monotonic time, avoids dealing with time going backwards
+    let nextTime = now;
+    let params = getRateLimitParams();
+
+    if (hostname in rateLimitHostTimes) {
+        nextTime = Math.max(now, rateLimitHostTimes[hostname]);
+    }
+    rateLimitHostTimes[hostname] = nextTime + params.min + params.rand * Math.random();
+    if (nextTime > now) {
+        return new Promise(resolve => setTimeout(resolve, nextTime - now)).then(() => {
+            return func(url, ref);
+        });
+    } else {
+        return func(url, ref);
+    }
+}
+async function fetchText(url, ref) {
+    return rateLimitWrapper(fetchTextNoRateLimit, url, ref);
+}
+async function fetchImage(url, ref) {
+    return rateLimitWrapper(fetchImageNoRateLimit, url, ref);
 }
 // make pdf/zip from images stored in a button
 async function embedImages(pdfButton,zipButton,type,half=false){

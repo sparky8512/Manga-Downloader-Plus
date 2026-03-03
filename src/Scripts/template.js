@@ -1,7 +1,9 @@
-function templateF(funcs, groupNames=null) {
+async function templateF(funcs, groupNames=null) {
     if (!funcs.isChapterListPage()) {
         return;
     }
+
+    await initOptions();
 
     // get all the rows
     let rows;

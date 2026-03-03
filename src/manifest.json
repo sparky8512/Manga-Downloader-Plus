@@ -98,6 +98,7 @@
 		"js": [
 			"External/pdf-lib.js",
 			"External/jszip.js",
+			"option_store.js",
 			"functions.js",
 			"Scripts/template.js",
 			"Scripts/mangakiss.js",

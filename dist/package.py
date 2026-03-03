@@ -100,9 +100,11 @@ def emit_chrome_package(file, manifest):
     include_files.extend(manifest["icons"].values())
     include_files.append(manifest["options_ui"]["page"])
     include_files.extend(find_script_tags(manifest["options_ui"]["page"]))
-    include_files.extend(manifest["content_scripts"][0]["js"])
-    include_files.extend(manifest["content_scripts"][0]["css"])
+    for content_script in manifest["content_scripts"]:
+        include_files.extend(content_script["js"])
+        include_files.extend(content_script["css"])
     include_files.append(manifest["background"]["service_worker"])
+    include_files = list(dict.fromkeys(include_files).keys())   # remove duplicates
     with zipfile.ZipFile(file, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zfile:
         zinfo = zipfile.ZipInfo.from_file("manifest.json")
         manistr = json.dumps(manifest, indent=4)
@@ -121,9 +123,11 @@ def emit_firefox_package(file, manifest):
     include_files.extend(manifest["icons"].values())
     include_files.append(manifest["options_ui"]["page"])
     include_files.extend(find_script_tags(manifest["options_ui"]["page"]))
-    include_files.extend(manifest["content_scripts"][0]["js"])
-    include_files.extend(manifest["content_scripts"][0]["css"])
+    for content_script in manifest["content_scripts"]:
+        include_files.extend(content_script["js"])
+        include_files.extend(content_script["css"])
     include_files.extend(manifest["background"]["scripts"])
+    include_files = list(dict.fromkeys(include_files).keys())   # remove duplicates
     with zipfile.ZipFile(file, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zfile:
         zinfo = zipfile.ZipInfo.from_file("manifest.json")
         manistr = json.dumps(manifest, indent=4)

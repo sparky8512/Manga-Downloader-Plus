@@ -123,3 +123,35 @@ browser.runtime.sendMessage({cmd: "identify"}).then((res) => {
 }).catch((err) => {
     console.log("Browser id err: "+err);
 });
+
+function rateLimitElemChanged(event, attr) {
+    let elem = event.target;
+    if (elem.reportValidity()) {
+        let params = getRateLimitParams();
+        params[attr] = elem.value * 1000;
+        setRateLimitParams(params);
+    }
+}
+
+function setFromStorage() {
+    let params = getRateLimitParams();
+    document.getElementById("md-interval-fixed").value = params.min/1000;
+    document.getElementById("md-interval-random").value = params.rand/1000;
+}
+
+function rateLimitReset(event) {
+    setRateLimitParams(null).then(() => {
+        setFromStorage();
+    });
+}
+
+initOptions().then(() => {
+    document.getElementById("md-interval-fixed").addEventListener("change",
+        (e) => rateLimitElemChanged(e, "min"));
+    document.getElementById("md-interval-random").addEventListener("change",
+        (e) => rateLimitElemChanged(e, "rand"));
+    document.getElementById("md-interval-reset").addEventListener("click",
+        rateLimitReset);
+
+    setFromStorage();
+});
