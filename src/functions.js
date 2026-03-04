@@ -118,8 +118,15 @@ async function handleFetchError(err, hostname) {
 }
 // Run a fetch() through the background task if cross-origin
 async function fetchTextNoRateLimit(url, ref) {
-    if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
+    const urlOrigin = new URL(url).origin;
+    const refOrigin = new URL(ref).origin;
+    if (urlOrigin == window.location.origin && refOrigin == window.location.origin) {
         return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"}).then((res) => res.text());
+    }
+
+    // mimic strict origin referrer policy
+    if (refOrigin != urlOrigin) {
+        ref = refOrigin + "/";
     }
     const res = await browser.runtime.sendMessage({cmd: "fetchText", url: url, referrer: ref});
     if (res[0]) {
@@ -132,7 +139,9 @@ async function fetchTextNoRateLimit(url, ref) {
     throw res[1];
 }
 async function fetchImageNoRateLimit(url, ref) {
-    if ((new URL(url)).origin == window.location.origin && (new URL(ref)).origin == window.location.origin) {
+    const urlOrigin = new URL(url).origin;
+    const refOrigin = new URL(ref).origin;
+    if (urlOrigin == window.location.origin && refOrigin == window.location.origin) {
         return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"})
             .then((res) => res.arrayBuffer()).then((buf) => {
                 // JSZip will fail if this instanceof check returns false, which
@@ -142,6 +151,11 @@ async function fetchImageNoRateLimit(url, ref) {
                 }
                 return structuredClone(buf, {tranfser: [buf]});
             });
+    }
+
+    // mimic strict origin referrer policy
+    if (refOrigin != urlOrigin) {
+        ref = refOrigin + "/";
     }
     const res = await browser.runtime.sendMessage({cmd: "fetchImage", url: url, referrer: ref});
     if (res[0]) {

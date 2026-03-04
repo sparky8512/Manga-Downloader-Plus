@@ -33,6 +33,8 @@ As of 2026-Mar, the following websites have been confirmed to work:
 - `manhuaplus.com`
 - `toonclash.com` (Manga Clash)
 - `manhuaus.com`
+- `mangakakalot.gg` (was `mangakakalot.com`; currently only working for first 50 chapters on list)
+- `manganato.gg` (currently only working for first 50 chapters on list)
 - `readopm.com` (One Punch Man)
 - `readberserk.com`
 - `webtoons.com`
@@ -64,8 +66,6 @@ As of 2026-Mar, the following websites have been confirmed to work:
 The following were previously supported but are currently broken:
 - `kiryuu.org` (also `kiryuu.id`; new site format has its own download button, so unlikely to fix)
 - `klz9.com` (formerly `kissaway.net` and `klmanga.com`; format has changed)
-- `mangakakalot.gg` (was `mangakakalot.com`; cookies issue on image download)
-- `manganato.gg` (cookies issue on image download)
 
 The following previously supported websites appear to be permanently offline:
 
