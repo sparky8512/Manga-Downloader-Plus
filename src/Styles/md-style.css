@@ -156,6 +156,10 @@ table.md-table td {
 .md-col-hostname {
     width: 72ch;
 }
+.md-col-hostname-empty {
+    width: 72ch;
+    opacity: 50%;
+}
 .md-col-remove-button {
     width: 12px;
 }

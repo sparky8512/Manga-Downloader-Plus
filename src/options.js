@@ -40,7 +40,8 @@ function updateActivePermissions() {
         if (tbody.childElementCount === 0) {
             const tr = document.createElement("tr");
             let td = document.createElement("td");
-            td.setAttribute("class", "md-col-hostname");
+            td.setAttribute("class", "md-col-hostname-empty");
+            td.textContent = "none added";
             tr.appendChild(td);
             td = document.createElement("td");
             td.setAttribute("class", "md-col-remove-button");
@@ -155,3 +156,16 @@ initOptions().then(() => {
 
     setFromStorage();
 });
+
+function toggleMoreInfo(event) {
+    let infoElem = document.getElementById("md-hostname-info");
+    if (infoElem.style.display == "none") {
+        infoElem.style.display = "";
+        event.target.textContent = "less info about hostnames";
+    } else {
+        infoElem.style.display = "none";
+        event.target.textContent = "more info about hostnames";
+    }
+}
+
+document.getElementById("md-more-info").addEventListener("click", toggleMoreInfo);

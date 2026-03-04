@@ -47,11 +47,20 @@
         <tbody id="md-active-permissions" />
     </table>
 
-    <p><b>NOTE</b>: If the download request was redirected to a different host
-    by the website server, both the original hostname and the redirect
-    destination hostname may need permission added. The failure notice will
-    only list the original hostname and finding the redirect destination can
-    be tricky.
+    <div id="md-hostname-info" style="display: none">
+    <p>Do not include the scheme, path, or port number with the hostname. The
+    hostname may optionally be prefixed with "<code>*.</code>" to also match
+    any subdomain of a domain name. "<code>*</code>" by itself can also be
+    used to match any hostname, but this is not recommended. For example, for
+    the URL <code>https://www.example.com:8080/folder/image.png</code>, the
+    hostnames <code>www.example.com</code>, <code>*.www.example.com</code>,
+    <code>*.example.com</code>, and <code>*</code> will all match, but
+    <code>example.com</code> will not.</p>
+
+    <p>If the download request was redirected to a different host by the
+    website server, both the original hostname and the redirect destination
+    hostname may need permission added. The failure notice will only list the
+    original hostname and finding the redirect destination can be tricky.
     <span class="md-display-chrome">On Chrome (and similar) browsers, one way
     to find the redirect hostname is to open the Network tab of the Developer
     tools for this page and repeat the download attempt, but you should only
@@ -63,15 +72,9 @@
     repeating the download attempt, but you should only do that if you
     understand what you're doing.</span>
     </p>
+    </div>
 
-    <p>Do not include the scheme, path, or port number with the hostname. The
-    hostname may optionally be prefixed with "<code>*.</code>" to also match
-    any subdomain of a domain name. "<code>*</code>" by itself can also be
-    used to match any hostname, but this is not recommended. For example, for
-    the URL <code>https://www.example.com:8080/folder/image.png</code>, the
-    hostnames <code>www.example.com</code>, <code>*.www.example.com</code>,
-    <code>*.example.com</code>, and <code>*</code> will all match, but
-    <code>example.com</code> will not.</p>
+    <p><a href="#" id="md-more-info">more info about hostnames</a></p>
 
     <script src="option_store.js"></script>
     <script src="options.js"></script>
