@@ -5,8 +5,8 @@ async function templateF(funcs, groupNames=null) {
 
     await initOptions();
 
-    // get all the rows
-    let rows;
+    // this is the rows being added or pending
+    let rows = [];
     // to store download button for easy access
     let pdfButtons = [];
     let zipButtons = [];
@@ -39,7 +39,27 @@ async function templateF(funcs, groupNames=null) {
 
     // add download button for each chapter
     function addDownloadButtons() {
-        rows = funcs.getChapterElems();
+        let initRows = funcs.getChapterElems(addDownloadButtonRows);
+        addDownloadButtonRows(initRows);
+    }
+
+    function addDownloadButtonRows(newRows) {
+        let pendingRows = rows.length;
+        rows.push(...newRows);
+        if (pendingRows) {
+            // loop below is already running
+            return;
+        }
+
+        let oldListLength = pdfButtons.length;
+        if (oldListLength) {
+            let waitNote = document.querySelector("span#md-batch-note");
+            waitNote.textContent = "wait, getting data from more chapters";
+            waitNote.style.display = "";
+            let batchDownloadButton = document.querySelector("button#md-batch-download-button");
+            batchDownloadButton.disabled = "true";
+        }
+
         function loopRows(start) {
             for (let i=start; i<rows.length; i++) {
                 if (i >= start+100) {
@@ -92,10 +112,11 @@ async function templateF(funcs, groupNames=null) {
                 // storing download button for easy access
                 pdfButtons.push(pdfButtonSet);
                 zipButtons.push(zipButtonSet);
+            }
 
-                if (pdfButtons.length == rows.length) {
-                    addChaptersToList();
-                }
+            if (pdfButtons.length == oldListLength + rows.length) {
+                rows = [];
+                addChaptersToList(oldListLength);
             }
         }
         loopRows(0);
@@ -304,11 +325,11 @@ async function templateF(funcs, groupNames=null) {
     }
 
     // add chapters to list inside floatDiv
-    function addChaptersToList(){
+    function addChaptersToList(iStart) {
         let waitNote = document.querySelector("span#md-batch-note");
         let floatDivChapterList = document.querySelector("select#md-float-chapter-list");
 
-        for (let i=0; i<pdfButtons.length; i++) {
+        for (let i=iStart; i<pdfButtons.length; i++) {
             let option = document.createElement("option");
             let pdfButton = pdfButtons[i][0];
             option.textContent = pdfButton.title;

@@ -47,7 +47,6 @@ function weebcentralF() {
         elem.parentElement.appendChild(pdfButton, elem);
         elem.parentElement.appendChild(zipButton, elem);
 
-
         return [link, title];
     };
 

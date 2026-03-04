@@ -7,23 +7,54 @@ function mangakakalotF() {
 
     templateFuncs.waitChaptersLoaded = function() {
         return new Promise((resolve, reject) => {
-            let loops = 0;
-            function checkLoop() {
-                if (document.querySelector("p.chapter-loading-text") === null) {
-                    resolve(true);
-                } else if(loops++ < 60){
-                    setTimeout(checkLoop,1000);
-                } else {
-                    resolve(false);
-                }
+            const loadingElem = document.querySelector("p.chapter-loading-text");
+            if (loadingElem === null) {
+                resolve(true);
+                return;
             }
-            checkLoop();
+
+            let tid = setTimeout(function() {
+                observer.disconnect();
+                resolve(false);
+            }, 60000);
+
+            const observer = new MutationObserver((records) => {
+                for (record of records) {
+                    if (Array.from(record.removedNodes).includes(loadingElem)) {
+                        clearTimeout(tid);
+                        observer.disconnect();
+                        resolve(true);
+                        break;
+                    }
+                }
+            });
+            observer.observe(loadingElem.parentNode, { childList: true });
         });
     };
 
 
-    templateFuncs.getChapterElems = function() {
-        return document.querySelectorAll("div.chapter-list > div.row");
+    templateFuncs.getChapterElems = function(addRowsCallback) {
+        // this is just a convenient place to do this
+        let batchNote = document.querySelector("span#md-batch-note");
+        batchNote.style.color = "#000000";
+
+        let chapterList = document.querySelector("div.chapter-list");
+        let rows = chapterList.querySelectorAll("div.row");
+        const observer = new MutationObserver((records) => {
+            let newRows = [];
+            for (record of records) {
+                record.addedNodes.forEach((elem) => {
+                    if (elem.matches("div.row")) {
+                        newRows.push(elem);
+                    }
+                });
+            }
+            if (newRows) {
+                addRowsCallback(newRows);
+            }
+        });
+        observer.observe(chapterList, { childList: true });
+        return rows;
     };
 
     templateFuncs.insertNote = function(note) {

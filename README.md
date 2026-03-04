@@ -33,8 +33,8 @@ As of 2026-Mar, the following websites have been confirmed to work:
 - `manhuaplus.com`
 - `toonclash.com` (Manga Clash)
 - `manhuaus.com`
-- `mangakakalot.gg` (was `mangakakalot.com`; currently only working for first 50 chapters on list)
-- `manganato.gg` (currently only working for first 50 chapters on list)
+- `mangakakalot.gg` (was `mangakakalot.com`)
+- `manganato.gg`
 - `readopm.com` (One Punch Man)
 - `readberserk.com`
 - `webtoons.com`
