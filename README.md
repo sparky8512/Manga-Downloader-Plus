@@ -26,7 +26,7 @@ Firefox does not expose profiles in its UI the way that Chrome and Edge do. You 
 
 # Supported Websites
 
-As of 2026-Mar, the following websites have been confirmed to work at least partially:
+As of 2026-Mar, the following websites have been confirmed to work:
 
 - `mangakiss.org`
 - `toonily.com`
@@ -59,6 +59,7 @@ As of 2026-Mar, the following websites have been confirmed to work at least part
 - `sailmg.com` (MangaSail, `mangasaki.com` now also redirects here)
 - `fanfox.net` (Manga Fox)
 - `mangabolt.com` (some of the older `readX.com` sites now redirect here)
+- `weebcentral.com`
 
 The following were previously supported but are currently broken:
 - `kiryuu.org` (also `kiryuu.id`; new site format has its own download button, so unlikely to fix)

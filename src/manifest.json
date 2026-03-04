@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Manga Downloader+",
 	"short_name" : "Manga DL+",
-	"version": "4.0.5.999",
+	"version": "4.0.6",
 
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
@@ -29,6 +29,7 @@
 		"https://*.klimv1.xyz/*",
 		"https://*.lastation.us/*",
 		"https://*.leanbox.us/*",
+		"https://*.lowee.us/*",
 		"https://*.mangaclash.com/*",
 		"https://*.mangafox.me/*",
 		"https://*.mangahere.org/*",
@@ -40,9 +41,11 @@
 		"https://*.mkklcdnv6tempv4.com/*",
 		"https://*.mkklcdnv6tempv5.com/*",
 		"https://*.mncdnbuv1.com/*",
+		"https://*.planeptune.us/*",
 		"https://*.pstatic.net/*",
 		"https://*.sailmg.com/*",
 		"https://*.toonily.com/*",
+		"https://*.tnlycdn.com/*",
 		"https://*.uqni.net/*",
 		"https://*.waitst.com/*"
 	],
@@ -93,7 +96,8 @@
 			"*://www.mangatown.com/*",
 			"*://manhuaplus.com/*",
 			"*://klz9.com/*",
-			"*://fanfox.net/*"
+			"*://fanfox.net/*",
+			"*://weebcentral.com/*"
 		],
 		"js": [
 			"External/pdf-lib.js",
@@ -111,6 +115,7 @@
 			"Scripts/mangatown.js",
 			"Scripts/loveheaven.js",
 			"Scripts/fanfox.js",
+			"Scripts/weebcentral.js",
 			"index.js"
 		],
 		"css": ["Styles/md-style.css"]

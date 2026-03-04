@@ -43,6 +43,9 @@ if(document.querySelector("span#azerty") === null){
         case "fanfox.net":
             fanfoxF();
             break;
+        case "weebcentral.com":
+            weebcentralF();
+            break;
         default:
             let domain = host.split(".").slice(-2).join(".");
             switch (domain) {

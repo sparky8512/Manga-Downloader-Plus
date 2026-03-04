@@ -52,6 +52,7 @@
 /* Modal Content/Box */
 .md-float-modal-content {
     background-color: #fefefe;
+    color: #000000;
     padding: 20px;
     border: 1px solid #888;
 }
