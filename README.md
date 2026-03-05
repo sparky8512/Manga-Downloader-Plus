@@ -1,5 +1,12 @@
 NOTE: This is a fork of https://github.com/AllaliAdil/Manga-Downloader-Extension, which does not appear to be maintained any longer.
 
+Major changes in this fork include:
+- Updated to work with modern browser versions
+- Fixed some broken or moved websites, added a few new ones
+- Options UI for run-time host permissions, primarily useful to resolve some image download failures
+
+See [the release notes](https://github.com/sparky8512/Manga-Downloader-Plus/releases) for more detail on the changes in each release.
+
 ---
 
 # Considerations for running this extension
@@ -16,11 +23,13 @@ You can also load either the .zip file from the release assets or directly from 
 
 To install on Chrome or Edge browser (or other Chromium-based browser), first either download the Chrome .zip file from the release assets (latest one is [here](https://github.com/sparky8512/Manga-Downloader-Plus/releases/latest/download/Manga-Downloader-Chrome.zip)), or clone this repository. If using a release .zip file, extract it to an empty directory. Then from the extensions menu, select Manage Extensions, flip on the "Developer mode" toggle, and then click on "Load unpacked". Finally, select either the directory you extracted the .zip file to or the `src` directory of the cloned repository.
 
-### Using browser profiles in Firefox
+### Using browser profiles
 
 Given the fairly wide set of websites this extension needs permission to access in order to do its job, it's a good idea to enable it only in a separate profile from the (probably default) one you use for every day browsing.
 
-Firefox does not expose profiles in its UI the way that Chrome and Edge do. You can create a new one easily enough by entering `about:profiles` in the address bar, pressing the "Create New Profile" button, and then following the wizard instructions. However, actually using your new profile can be a pain. I found it best to change all the shortcuts (or equivalent) that launch Firefox to do so with a specific profile by adding `-P <profile name>` to the command line. There's a more thorough walkthrough on this topic in [this reddit post](https://www.reddit.com/r/firefox/comments/xtv2do/how_to_create_multiple_firefox_profiles_and/) and more complete instructions for the `about:profiles` page on [this Firefox Support page](https://support.mozilla.org/en-US/kb/profile-manager-create-remove-switch-firefox-profiles).
+Information on how to use profiles on Chrome or Edge can be found on [this Chrome Help page](https://support.google.com/chrome/answer/2364824).
+
+For Firefox, most current versions as of 2026-Mar have enabled a new profile manager. See [this Firefox Support page](https://support.mozilla.org/en-US/kb/profile-management) for usage details. The current ESR release version of Firefox does not have it enabled by default, but you can enable it by setting `browser.profiles.enabled` to `true` in the `about:config` page. Alternatively, you can still use the old profile manager as described in [this reddit post](https://www.reddit.com/r/firefox/comments/xtv2do/how_to_create_multiple_firefox_profiles_and/) and [this Firefox Support page](https://support.mozilla.org/en-US/kb/profile-manager-create-remove-switch-firefox-profiles).
 
 ---
 
