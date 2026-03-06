@@ -154,6 +154,12 @@ table.md-table td {
     height: 16px;
 }
 
+#md-missing-permissions {
+    display: none;
+    align-items: center;
+    padding-right: 10px;
+}
+
 .md-col-hostname {
     width: 72ch;
 }

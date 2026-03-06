@@ -7,11 +7,21 @@ function updateActivePermissions() {
         const manifest = browser.runtime.getManifest();
         let autoOrigins = new Set(manifest.content_scripts[0].matches);
         autoOrigins = autoOrigins.union(new Set(manifest.host_permissions));
-        const origins = new Set(perms.origins).difference(autoOrigins);
+        const currentOrigins = new Set(perms.origins);
+        const missingOrigins = autoOrigins.difference(currentOrigins);
+        const extraOrigins = currentOrigins.difference(autoOrigins);
+
+        let missingElem = document.getElementById("md-missing-permissions");
+        if (missingOrigins.size) {
+            missingElem.origins = missingOrigins;
+            missingElem.style.display = "flex";
+        } else {
+            missingElem.style.display = "none";
+        }
 
         const tbody = document.getElementById("md-active-permissions");
         tbody.replaceChildren();
-        for (const origin of origins) {
+        for (const origin of extraOrigins) {
             const matches = origin.match(/^https:\/\/(.*)\/\*$/);
             if (matches === null) {
                 continue;
@@ -52,6 +62,19 @@ function updateActivePermissions() {
         console.log("Get err: "+err);
     });
 }
+
+document.getElementById("md-request-missing").addEventListener("click", (event) => {
+    const missingOrigins = document.getElementById("md-missing-permissions").origins;
+    if (missingOrigins.size) {
+        browser.permissions.request({origins: Array.from(missingOrigins)}).then((res) => {
+            if (res) {
+                updateActivePermissions();
+            }
+        }, (err) => {
+            console.log("Request err: "+err);
+        });
+    }
+});
 
 document.getElementById("md-permission-form").addEventListener("submit", (event) => {
     const data = new FormData(event.target);

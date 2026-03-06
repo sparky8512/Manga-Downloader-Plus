@@ -24,6 +24,14 @@
 
     <h2>Host Permissions</h2>
 
+    <p id="md-missing-permissions">
+    <span><b style="color: red">WARNING</b>: Some host permissions marked as
+    required are disabled. This can happen when upgrading from an older release
+    of this extension. This will likely result in image download failure for
+    the affected websites.</span>
+    <button id="md-request-missing">Request missing permissions</button>
+    </p>
+
     <p>If images fail to download due to a permissions error, you can add the
     permission by entering the hostname from the failed URL and pressing the
     <code>Request</code> button. Your browser will then ask you to approve the
