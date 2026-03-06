@@ -163,9 +163,10 @@ def emit_firefox_update_manifest(file, manifest):
                 file_hash.update(data)
         update_manifest["addons"][extension_id]["updates"][0]["update_hash"] = "sha256:{}".format(file_hash.hexdigest())
     except urllib.error.HTTPError:
-        pass
+        logging.warning("Failed to open "+update_url+", omitting hash value")
 
     json.dump(update_manifest, file, indent=4)
+    file.write("\n")
 
 
 def main():
