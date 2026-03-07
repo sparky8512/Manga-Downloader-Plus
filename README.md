@@ -71,6 +71,8 @@ As of 2026-Mar, the following websites have been confirmed to work:
 - `fanfox.net` (Manga Fox)
 - `mangabolt.com` (some of the older `readX.com` sites now redirect here)
 - `weebcentral.com`
+- `mangaball.net`
+- `mangabuddy.com`
 
 The following were previously supported but are currently broken:
 - `kiryuu.org` (also `kiryuu.id`; new site format has its own download button, so unlikely to fix)
