@@ -42,6 +42,7 @@
 		"https://*.mkklcdnv6tempv5.com/*",
 		"https://*.mncdnbuv1.com/*",
 		"https://*.planeptune.us/*",
+		"https://*.poke-black-and-white.net/*",
 		"https://*.pstatic.net/*",
 		"https://*.sailmg.com/*",
 		"https://*.toonily.com/*",
@@ -97,7 +98,8 @@
 			"*://manhuaplus.com/*",
 			"*://klz9.com/*",
 			"*://fanfox.net/*",
-			"*://weebcentral.com/*"
+			"*://weebcentral.com/*",
+			"*://mangaball.net/*"
 		],
 		"js": [
 			"External/pdf-lib.js",
@@ -116,6 +118,7 @@
 			"Scripts/loveheaven.js",
 			"Scripts/fanfox.js",
 			"Scripts/weebcentral.js",
+			"Scripts/mangaball.js",
 			"index.js"
 		],
 		"css": ["Styles/md-style.css"]

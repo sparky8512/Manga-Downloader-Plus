@@ -7,6 +7,7 @@ async function templateF(funcs, groupNames=null) {
 
     // this is the rows being added or pending
     let rows = [];
+    let resetPending = false;
     // to store download button for easy access
     let pdfButtons = [];
     let zipButtons = [];
@@ -43,16 +44,25 @@ async function templateF(funcs, groupNames=null) {
         addDownloadButtonRows(initRows);
     }
 
-    function addDownloadButtonRows(newRows) {
+    function addDownloadButtonRows(newRows, reset = false) {
         let pendingRows = rows.length;
+        if (reset) {
+            rows = [];
+            pdfButtons = [];
+            zipButtons = [];
+            document.querySelector("select#md-float-chapter-list").replaceChildren();
+        }
         rows.push(...newRows);
         if (pendingRows) {
             // loop below is already running
+            if (reset) {
+                resetPending = true;
+            }
             return;
         }
 
         let oldListLength = pdfButtons.length;
-        if (oldListLength) {
+        if (oldListLength || reset) {
             let waitNote = document.querySelector("span#md-batch-note");
             waitNote.textContent = "wait, getting data from more chapters";
             waitNote.style.display = "";
@@ -61,6 +71,11 @@ async function templateF(funcs, groupNames=null) {
         }
 
         function loopRows(start) {
+            if (resetPending) {
+                start = 0;
+                oldListLength = 0;
+                resetPending = false;
+            }
             for (let i=start; i<rows.length; i++) {
                 if (i >= start+100) {
                     let waitNote = document.querySelector("span#md-batch-note");
@@ -93,7 +108,6 @@ async function templateF(funcs, groupNames=null) {
                 }
 
                 // store chapter link
-                let url = res[0];
                 for (let i=0; i<numButtonGroups; i++) {
                     let pdfButton = pdfButtonSet[i];
                     let zipButton = zipButtonSet[i];
