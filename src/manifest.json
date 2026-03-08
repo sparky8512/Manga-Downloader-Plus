@@ -133,8 +133,8 @@
 			"*://mangabuddy.com/*"
 		],
 		"js": [
-			"External/pdf-lib.js",
-			"External/jszip.js",
+			"External/fflate.min.js",
+			"External/pdf-lib.min.js",
 			"option_store.js",
 			"functions.js",
 			"Scripts/template.js",
