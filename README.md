@@ -31,6 +31,12 @@ Information on how to use profiles on Chrome or Edge can be found on [this Chrom
 
 For Firefox, most current versions as of 2026-Mar have enabled a new profile manager. See [this Firefox Support page](https://support.mozilla.org/en-US/kb/profile-management) for usage details. The current ESR release version of Firefox does not have it enabled by default, but you can enable it by setting `browser.profiles.enabled` to `true` in the `about:config` page. Alternatively, you can still use the old profile manager as described in [this reddit post](https://www.reddit.com/r/firefox/comments/xtv2do/how_to_create_multiple_firefox_profiles_and/) and [this Firefox Support page](https://support.mozilla.org/en-US/kb/profile-manager-create-remove-switch-firefox-profiles).
 
+### Host permissions
+
+Speaking of permissions, this extension tries pretty hard to only request permissions it needs to do its job, while at the same time it tries to keep the permissions list up to date with changes on the supported websites. As a result of this, new versions of the extension often add or remove host permissions, but these don't always get enabled when updating from a prior release. This can result in a failure to download images. This extension should detect this case and direct the user to its options page, which will offer to request the missing permissions.
+
+If you don't want to deal with this, you can toggle on access to all websites in the browser's extension management menu or you can go to this extension's options page (by clicking on its icon in the extension menu) and request host permission for `*`. This is not really recommended, though, because it will allow this extension to access and modify any web page you open.
+
 ---
 
 # Supported Websites
