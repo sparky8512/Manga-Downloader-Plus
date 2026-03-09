@@ -73,6 +73,7 @@ As of 2026-Mar, the following websites have been confirmed to work:
 - `weebcentral.com`
 - `mangaball.net`
 - `mangabuddy.com`
+- `mangago.me`
 
 The following were previously supported but are currently broken:
 - `kiryuu.org` (also `kiryuu.id`; new site format has its own download button, so unlikely to fix)

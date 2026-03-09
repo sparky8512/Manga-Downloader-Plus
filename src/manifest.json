@@ -33,6 +33,7 @@
 		"https://*.mangaclash.com/*",
 		"https://*.mangafox.me/*",
 		"https://*.mangahere.org/*",
+		"https://*.mangapicgallery.com/*",
 		"https://*.manhuaplus.com/*",
 		"https://*.manhuaus.com/*",
 		"https://*.s1.mbcdnsaa.org/*",
@@ -130,7 +131,8 @@
 			"*://fanfox.net/*",
 			"*://weebcentral.com/*",
 			"*://mangaball.net/*",
-			"*://mangabuddy.com/*"
+			"*://mangabuddy.com/*",
+			"*://www.mangago.me/*"
 		],
 		"js": [
 			"External/pdf-lib.js",
@@ -151,6 +153,7 @@
 			"Scripts/weebcentral.js",
 			"Scripts/mangaball.js",
 			"Scripts/mangabuddy.js",
+			"Scripts/mangago.js",
 			"index.js"
 		],
 		"css": ["Styles/md-style.css"]

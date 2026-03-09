@@ -52,6 +52,9 @@ if(document.querySelector("span#azerty") === null){
         case "mangabuddy.com":
             mangabuddyF();
             break;
+        case "www.mangago.me":
+            mangagoF();
+            break;
         default:
             let domain = host.split(".").slice(-2).join(".");
             switch (domain) {
