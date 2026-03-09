@@ -6,9 +6,8 @@ if (typeof browser == "undefined") {
 
 let rateLimitHostTimes = { };
 
-// check image arrayBuffer if it's a Jpeg
-function isJPEG(arrayBuffer){
-    let data = new Uint8Array(arrayBuffer);
+// check image bytes if it's a Jpeg
+function isJPEG(data){
     if (data.length < 2) {
         return false;
     }
@@ -19,9 +18,8 @@ function isJPEG(arrayBuffer){
 
     return false;
 }
-// check image arrayBuffer if it's a Png
-function isPNG(arrayBuffer){
-    let data = new Uint8Array(arrayBuffer);
+// check image bytes if it's a Png
+function isPNG(data){
     if (data.length < 2) {
         return false;
     }
@@ -32,13 +30,11 @@ function isPNG(arrayBuffer){
 
     return false;
 }
-// convert image from arrayBuffer to jpeg as base64
-function imageToJpeg(arrayBuffer){
+// convert image from imageBytes (Uint8Array) to jpeg as Uint8Array
+function imageToJpeg(imageBytes) {
     return new Promise((resolve, reject) => {
-        let arrayBufferView = new Uint8Array(arrayBuffer);
-        let blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
-        let urlCreator = window.URL || window.webkitURL;
-        let imageUrl = urlCreator.createObjectURL(blob);
+        let blob = new Blob( [ imageBytes ], { type: "image/jpeg" } );
+        let imageUrl = URL.createObjectURL(blob);
 
         let image = new Image();
         image.addEventListener("load", () => {
@@ -46,11 +42,25 @@ function imageToJpeg(arrayBuffer){
             canvas.width = image.naturalWidth;
             canvas.height = image.naturalHeight;
             canvas.getContext("2d").drawImage(image, 0, 0);
-            let data = canvas.toDataURL("image/jpeg").split(";base64,")[1];
-            resolve(data);
+            canvas.toBlob((blob) => {
+                if (blob === null) {
+                    reject("blobify error");
+                } else {
+                    resolve(blob.arrayBuffer().then((buf) => {
+                        // guarantee returned object is instance of globalThis.Uint8Array
+                        // some library code will fail if it is window.Uint8Array instead
+                        if (!(buf instanceof ArrayBuffer)) {
+                            buf = structuredClone(buf, {tranfser: [buf]});
+                        }
+                        return new Uint8Array(buf);
+                    }));
+                }
+                URL.revokeObjectURL(imageUrl);
+            }, "image/jpeg");
         });
         image.addEventListener("error", () => {
             reject("conversion error");
+            URL.revokeObjectURL(imageUrl);
         });
         image.src = imageUrl;
     });
@@ -144,12 +154,12 @@ async function fetchImageNoRateLimit(url, ref) {
     if (urlOrigin == window.location.origin && refOrigin == window.location.origin) {
         return fetch(url, {referrer: ref, referrerPolicy: "no-referrer-when-downgrade", credentials: "include"})
             .then((res) => res.arrayBuffer()).then((buf) => {
-                // JSZip will fail if this instanceof check returns false, which
-                // will happen for window.ArrayBuffer objects on Firefox
-                if (buf instanceof ArrayBuffer) {
-                    return buf;
+                // guarantee returned object is instance of globalThis.Uint8Array
+                // some library code will fail if it is window.Uint8Array instead
+                if (!(buf instanceof ArrayBuffer)) {
+                    buf = structuredClone(buf, {tranfser: [buf]});
                 }
-                return structuredClone(buf, {tranfser: [buf]});
+                return new Uint8Array(buf);
             });
     }
 
@@ -159,7 +169,7 @@ async function fetchImageNoRateLimit(url, ref) {
     }
     const res = await browser.runtime.sendMessage({cmd: "fetchImage", url: url, referrer: ref});
     if (res[0]) {
-        return (new Uint8Array(res[1])).buffer;
+        return new Uint8Array(res[1]);
     }
     const retry = await handleFetchError(res[1], new URL(url).hostname);
     if (retry) {
@@ -187,9 +197,11 @@ async function rateLimitWrapper(func, url, ref) {
         return func(url, ref);
     }
 }
+// Fetch URL as string
 async function fetchText(url, ref) {
     return rateLimitWrapper(fetchTextNoRateLimit, url, ref);
 }
+// Fetch URL as Uint8Array
 async function fetchImage(url, ref) {
     return rateLimitWrapper(fetchImageNoRateLimit, url, ref);
 }
@@ -236,13 +248,22 @@ async function embedImages(pdfButton,zipButton,type,half=false){
     // Create a new PDFDocument
     let pdfDoc = await PDFDocument.create();
     // Create new zip file
-    let zip = new JSZip();
-    // work around JSZip bug #369
-    let now = new Date();
-    now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
-    JSZip.defaults.date = now;
+    let zip;
+    let zipChunks = [];
+    let zipPromise = new Promise((resolve, reject) => {
+        zip = new fflate.Zip((err, data, final) => {
+            if (err) {
+                reject(err);
+            } else {
+                zipChunks.push(data);
+                if (final) {
+                    resolve(new Blob(zipChunks));
+                }
+            }
+        });
+    });
     // create a folder inside the zip file
-    let folder = zip.folder(button.title.trim());
+    let folder = button.title.trim() + "/";
     let percentage = "";
     // get referrer link to bypass anti hot-linking
     let referrerLink = pdfButton.referrerLink;
@@ -259,7 +280,7 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         //get image url from links stored in button
         let imgUrl = button.imgs[i-1].trim();
         imgUrl = imgUrl.replace("http://","https://");
-        // Fetch image arrayBuffer
+        // Fetch image bytes
         let imageBytes;
         try {
             imageBytes = await fetchImage(imgUrl, referrerLink);
@@ -294,9 +315,9 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         while (num.length < (size || 2)) {
             num = "0" + num;
         }
-        now = new Date();
-        now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
-        folder.file(num + imageType, imageBytes, {base64: true, date: now});
+        let zipFile = new fflate.ZipPassThrough(folder + num + imageType);
+        zip.add(zipFile);
+        zipFile.push(imageBytes, true);
         // Embed the image bytes
         let image;
         try {
@@ -331,7 +352,8 @@ async function embedImages(pdfButton,zipButton,type,half=false){
         downloadFile(pdfBytes,button.title.trim(),"pdf");
     }
     // generate zip folder to download
-    zip.generateAsync({type:"blob"}).then(function(content) {
+    zip.end();
+    await zipPromise.then(function(content) {
         // store zip in button for reDownload
         zipButton.zip = content;
         if(type === 2){
@@ -406,7 +428,7 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         //get image url from links stored in button
         let imgUrl = chapter.imgs[i-1].trim();
         imgUrl = imgUrl.replace("http://","https://");
-        // Fetch image arrayBuffer
+        // Fetch image bytes
         let imageBytes;
         try {
             imageBytes = await fetchImage(imgUrl, referrerLink);
@@ -491,13 +513,22 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
 
 async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,referrerLink,progressBar,funQueue){
     // Create new zip file
-    let zip = new JSZip();
-    // work around JSZip bug #369
-    let now = new Date();
-    now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
-    JSZip.defaults.date = now;
+    let zip;
+    let zipChunks = [];
+    let zipPromise = new Promise((resolve, reject) => {
+        zip = new fflate.Zip((err, data, final) => {
+            if (err) {
+                reject(err);
+            } else {
+                zipChunks.push(data);
+                if (final) {
+                    resolve(new Blob(zipChunks));
+                }
+            }
+        });
+    });
     // create a folder inside the zip file
-    let folder = zip.folder(chapter.value.trim());
+    let folder = chapter.value.trim() + "/";
     let percentage;
     let errorHappened = false;
     let i;
@@ -510,7 +541,7 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         //get image url from links stored in button
         let imgUrl = chapter.imgs[i-1].trim();
         imgUrl = imgUrl.replace("http://","https://");
-        // Fetch image arrayBuffer
+        // Fetch image bytes
         let imageBytes;
         try {
             imageBytes = await fetchImage(imgUrl, referrerLink);
@@ -544,9 +575,9 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         while (num.length < (size || 2)) {
             num = "0" + num;
         }
-        now = new Date();
-        now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
-        folder.file(num + imageType, imageBytes, {base64: true, date: now});
+        let zipFile = new fflate.ZipPassThrough(folder + num + imageType);
+        zip.add(zipFile);
+        zipFile.push(imageBytes, true);
     }
     if(errorHappened){
         progressBar.currentImageNum += chapter.imgs.length - i;
@@ -567,8 +598,8 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         (funQueue.shift())();
     }
     // generate zip folder to download
-    await zip.generateAsync({type:"blob"}).then(function(content) {
-        // store zip in button for reDownload
+    zip.end();
+    await zipPromise.then(function(content) {
         downloadFile(content,chapter.value.trim(),"zip");
     });
     // enable the button after process is finished
@@ -583,7 +614,7 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         }
     }
 }
-// download arraybuffer as file
+// download bytes (Uint8Array) as file
 function downloadFile(body, filename, extension) {
     const blob = new Blob([body]);
     const fileName = `${filename}.${extension}`;
@@ -601,6 +632,7 @@ function downloadFile(body, filename, extension) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setTimeout(URL.revokeObjectURL, 0, url);
       }
     }
 }
