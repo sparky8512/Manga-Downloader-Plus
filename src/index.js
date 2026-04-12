@@ -31,9 +31,6 @@ if(document.querySelector("span#azerty") === null){
         case "www.webtoons.com":
             webtoonsF();
             break;
-        case "www.sailmg.com":
-            mangasailF();
-            break;
         case "www.mangatown.com":
             mangatownF();
             break;

@@ -73,7 +73,6 @@ As of 2026-Mar, the following websites have been confirmed to work:
 - `bluelockread.com`
 - `readjojos.com`
 - `readsakadays.com`
-- `sailmg.com` (MangaSail, `mangasaki.com` now also redirects here)
 - `fanfox.net` (Manga Fox)
 - `mangabolt.com` (some of the older `readX.com` sites now redirect here)
 - `weebcentral.com`
@@ -121,3 +120,4 @@ The following previously supported websites appear to be permanently offline:
 - `mangasee123.com` (closed in favor of new site `weebcentral.com`)
 - `manga4life.com` (closed in favor of new site `weebcentral.com`)
 - `readundead.com` (Undead Unluck)
+- `sailmg.com` (MangaSail, `mangasaki.com` redirected here at one point, too)

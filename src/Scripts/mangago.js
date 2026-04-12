@@ -26,8 +26,8 @@ function mangagoF() {
 
         let buttonHolder = document.createElement("td");
         buttonHolder.style["padding-left"] = "1ch";
-        buttonHolder.appendChild(pdfButton, elem);
-        buttonHolder.appendChild(zipButton, elem);
+        buttonHolder.appendChild(pdfButton);
+        buttonHolder.appendChild(zipButton);
         elem.parentElement.parentElement.parentElement.appendChild(buttonHolder);
 
         return [link, title];
