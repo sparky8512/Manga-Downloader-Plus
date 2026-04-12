@@ -80,6 +80,7 @@ As of 2026-Mar, the following websites have been confirmed to work:
 - `mangaball.net`
 - `mangabuddy.com`
 - `mangago.me`
+- `mangafire.to`
 
 The following were previously supported but are currently broken:
 - `kiryuu.org` (also `kiryuu.id`; new site format has its own download button, so unlikely to fix)
@@ -120,4 +121,3 @@ The following previously supported websites appear to be permanently offline:
 - `mangasee123.com` (closed in favor of new site `weebcentral.com`)
 - `manga4life.com` (closed in favor of new site `weebcentral.com`)
 - `readundead.com` (Undead Unluck)
-

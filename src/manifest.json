@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Manga Downloader+",
 	"short_name" : "Manga DL+",
-	"version": "4.0.7",
+	"version": "4.0.7.999",
 
 	"description": "Download Manga/Manhua/Manhwa/Webtoons/Comics chapters as PDF/ZIP(images) from many websites.",
 
@@ -66,6 +66,9 @@
 		"https://*.s28.mbcdnsbb.org/*",
 		"https://*.s29.mbcdnsbc.org/*",
 		"https://*.s30.mbcdnsbd.org/*",
+		"https://*.mfcdn1.xyz/*",
+		"https://*.mfcdn2.xyz/*",
+		"https://*.mfcdn3.xyz/*",
 		"https://*.mkklcdnv6temp.com/*",
 		"https://*.mkklcdnv6tempv2.com/*",
 		"https://*.mkklcdnv6tempv3.com/*",
@@ -132,7 +135,8 @@
 			"*://weebcentral.com/*",
 			"*://mangaball.net/*",
 			"*://mangabuddy.com/*",
-			"*://www.mangago.me/*"
+			"*://www.mangago.me/*",
+			"*://mangafire.to/*"
 		],
 		"js": [
 			"External/fflate.min.js",
@@ -154,9 +158,19 @@
 			"Scripts/mangaball.js",
 			"Scripts/mangabuddy.js",
 			"Scripts/mangago.js",
+			"Scripts/mangafire.js",
 			"index.js"
 		],
 		"css": ["Styles/md-style.css"]
+	}, {
+		"matches": [
+			"*://mangafire.to/read/*"
+		],
+		"js": ["Scripts/mangafire_subframe.js"],
+		"run_at": "document_start",
+		"world": "MAIN",
+		"all_frames": true
+
 	} ],
 	"background": {
 		"scripts": ["background.js"],
