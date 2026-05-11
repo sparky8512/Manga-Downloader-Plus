@@ -30,8 +30,10 @@ function isPNG(data){
 
     return false;
 }
-// convert image from imageBytes (Uint8Array) to jpeg as Uint8Array
-function imageToJpeg(imageBytes) {
+// transform image bytes via caller-supplied function, into jpeg format
+// input and output are Uint8Array type
+// xform function takes original rendered image and canvas for drawing new image
+function xformToJpeg(imageBytes, xform) {
     return new Promise((resolve, reject) => {
         let blob = new Blob( [ imageBytes ], { type: "image/jpeg" } );
         let imageUrl = URL.createObjectURL(blob);
@@ -41,7 +43,7 @@ function imageToJpeg(imageBytes) {
             let canvas = document.createElement("canvas");
             canvas.width = image.naturalWidth;
             canvas.height = image.naturalHeight;
-            canvas.getContext("2d").drawImage(image, 0, 0);
+            xform(image, canvas);
             canvas.toBlob((blob) => {
                 if (blob === null) {
                     reject("blobify error");
@@ -63,6 +65,12 @@ function imageToJpeg(imageBytes) {
             URL.revokeObjectURL(imageUrl);
         });
         image.src = imageUrl;
+    });
+}
+// convert image from imageBytes (Uint8Array) to jpeg as Uint8Array
+function imageToJpeg(imageBytes) {
+    return xformToJpeg(imageBytes, (image, canvas) => {
+        canvas.getContext("2d").drawImage(image, 0, 0)
     });
 }
 // Function wrapping code.
@@ -290,6 +298,16 @@ async function embedImages(pdfButton,zipButton,type,half=false){
             downloadFinished(pdfButton,zipButton);
             return;
         }
+        // invoke site-specific transform, if any
+        if (button.imgs.xform) {
+            try {
+                imageBytes = await button.imgs.xform(imgUrl, imageBytes);
+            } catch (error) {
+                alert("(Manga Downloader) Couldn't transform Image: " + error);
+                downloadFinished(pdfButton,zipButton);
+                return;
+            }
+        }
         // find image type, if not a jpeg or png convert it
         let imageType = ".jpg";
         if(isJPEG(imageBytes)){
@@ -432,10 +450,22 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         let imageBytes;
         try {
             imageBytes = await fetchImage(imgUrl, referrerLink);
-        } catch {
+        } catch (error) {
+            console.log("Batch fetch error: " + error);
             progressBar.failedChapters.push(chapter.value.trim());
             errorHappened = true;
             break;
+        }
+        // invoke site-specific transform, if any
+        if (chapter.imgs.xform) {
+            try {
+                imageBytes = await chapter.imgs.xform(imgUrl, imageBytes);
+            } catch (error) {
+                console.log("Batch transform error: " + error);
+                progressBar.failedChapters.push(chapter.value.trim());
+                errorHappened = true;
+                break;
+            }
         }
         //check image type
         if(isJPEG(imageBytes)){
@@ -450,6 +480,7 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             try {
                 imageBytes = await imageToJpeg(imageBytes);
             } catch (error) {
+                console.log("Batch convert error: " + error);
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
                 break;
@@ -463,6 +494,7 @@ async function createPdf(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             try {
                 image = await pdfDoc.embedPng(imageBytes);
             } catch (error) {
+                console.log("Batch embed error: " + error);
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
                 break;
@@ -545,10 +577,22 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
         let imageBytes;
         try {
             imageBytes = await fetchImage(imgUrl, referrerLink);
-        } catch {
+        } catch (error) {
+            console.log("Batch fetch error: " + error);
             progressBar.failedChapters.push(chapter.value.trim());
             errorHappened = true;
             break;
+        }
+        // invoke site-specific transform, if any
+        if (chapter.imgs.xform) {
+            try {
+                imageBytes = await chapter.imgs.xform(imgUrl, imageBytes);
+            } catch (error) {
+                console.log("Batch transform error: " + error);
+                progressBar.failedChapters.push(chapter.value.trim());
+                errorHappened = true;
+                break;
+            }
         }
         // check image type
         let imageType = ".jpg";
@@ -564,6 +608,7 @@ async function createZip(pdfButtonBatch,zipButtonBatch,chapterList,chapter,refer
             try {
                 imageBytes = await imageToJpeg(imageBytes);
             } catch (error) {
+                console.log("Batch convert error: " + error);
                 progressBar.failedChapters.push(chapter.value.trim());
                 errorHappened = true;
                 break;

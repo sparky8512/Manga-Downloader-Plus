@@ -62,6 +62,60 @@ function mangagoF() {
         return new Uint8Array(decoded.buffer, 0, unpaddedLen);
     }
 
+    async function xformImage(url, imageBytes, xform_maps) {
+        if (!url.includes("cspiclink")) {
+            return imageBytes;
+        }
+
+        let map = xform_maps["default"];
+        for (const [k, v] of Object.entries(xform_maps)) {
+            if (k != "default" && url.includes(k)) {
+                map = v;
+            }
+        }
+
+        if (!map) {
+            throw "No map found for image " + url;
+        }
+
+        map = map.split("a");
+        return xformToJpeg(imageBytes, (image, canvas) => {
+            const context = canvas.getContext("2d");
+            const w = canvas.width/9;
+            const h = canvas.height/9;
+            for (let x = 0; x < 9; x++) {
+                for (let y = 0; y < 9; y++) {
+                    const dxy = map[y*9 + x];
+                    const dx = dxy % 9;
+                    const dy = (dxy - dx)/9;
+                    context.drawImage(image, x * w, y * h, w, h, dx * w, dy * h, w, h);
+                }
+            }
+        });
+    }
+
+    function getAltMap(mapIn, swapPositions) {
+        let swaps = [];
+        let lastPos = 0;
+        let mapOut = "";
+        for (const pos of swapPositions) {
+            swaps.push(+mapIn.charAt(pos));
+            mapOut += mapIn.substring(lastPos, pos);
+            lastPos = pos + 1;
+        }
+        mapOut += mapIn.substring(lastPos);
+
+        swaps.reverse();
+        for (const swap of swaps) {
+            for (let i = (mapOut.length | 1) - 2; i >= swap; i -= 2) {
+                mapOut = mapOut.substring(0, i - swap) + mapOut[i] +
+                    mapOut.substring(i - swap + 1, i) + mapOut[i - swap] + mapOut.substring(i + 1);
+            }
+        }
+
+        return mapOut;
+    }
+
     async function decodeImageList(encodedB64, chapterJs, chapterUrl) {
         if (!(chapterJs in keyCache)) {
             keyCache[chapterJs] = await fetchText(chapterJs, chapterUrl).then((text) => {
@@ -76,7 +130,26 @@ function mangagoF() {
                 if (!parts) {
                     throw "Could not parse deobfuscated chapter.js";
                 }
-                return { key: parts[1], iv: parts[2] };
+
+                let xform_maps = Object.fromEntries(
+                    text.matchAll(/_imgkeys_\["([^"]*)"\]="([^"]*)"/g).map((x) => [x[1], x[2]])
+                );
+
+                let xform_parts = text.match(/img\.src\.indexOf\("([^"]*)"\)\s*>\s*0\s*\|\|\s*img\.src\.indexOf\("([^"]*)"\)\s*>\s*0\)\s*{\n.*\?\s*"([^"]*)"\s*:\s*"([^"]*)"\s*;.*\n.*\n((?:.*str\.charAt\(\d+\)\s*;.*\n)+)/);
+                if (xform_parts) {
+                    const swapPositions = Array.from(
+                        xform_parts[5].matchAll(/str\.charAt\((\d+)\)/g).map((x) => +x[1])
+                    );
+                    xform_maps[xform_parts[1]] = getAltMap(xform_parts[3], swapPositions);
+                    xform_maps[xform_parts[2]] = getAltMap(xform_parts[4], swapPositions);
+                }
+
+                xform_parts = text.match(/var\s+key\s*=\s*"([^"]*)"/);
+                if (xform_parts) {
+                    xform_maps["default"] = xform_parts[1];
+                }
+
+                return { key: parts[1], iv: parts[2], xform: xform_maps };
             });
         }
         let key = fromHex(keyCache[chapterJs].key);
@@ -86,10 +159,16 @@ function mangagoF() {
         if (!decoded.toLowerCase().startsWith("http")) {
             throw "Unexpected image list content";
         }
+        let urls = decoded.split(",");
         if (decoded.includes("cspiclink")) {
-            throw "Scrambled images not supported";
+            xform_maps = keyCache[chapterJs].xform;
+            if (!xform_maps) {
+                throw "Couldn't find image transformation maps";
+            }
+            urls.xform = (url, imageBytes) => xformImage(url, imageBytes, xform_maps);
         }
-        return decoded.split(",");
+
+        return urls;
     }
 
     templateFuncs.getChapterImageUrls = function(chapterUrl, buttonGroup, reportProgress) {
