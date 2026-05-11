@@ -102,7 +102,8 @@ def emit_chrome_package(file, manifest):
     include_files.extend(find_script_tags(manifest["options_ui"]["page"]))
     for content_script in manifest["content_scripts"]:
         include_files.extend(content_script["js"])
-        include_files.extend(content_script["css"])
+        if "css" in content_script:
+            include_files.extend(content_script["css"])
     include_files.append(manifest["background"]["service_worker"])
     include_files = list(dict.fromkeys(include_files).keys())   # remove duplicates
     with zipfile.ZipFile(file, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zfile:
@@ -125,7 +126,8 @@ def emit_firefox_package(file, manifest):
     include_files.extend(find_script_tags(manifest["options_ui"]["page"]))
     for content_script in manifest["content_scripts"]:
         include_files.extend(content_script["js"])
-        include_files.extend(content_script["css"])
+        if "css" in content_script:
+            include_files.extend(content_script["css"])
     include_files.extend(manifest["background"]["scripts"])
     include_files = list(dict.fromkeys(include_files).keys())   # remove duplicates
     with zipfile.ZipFile(file, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zfile:
